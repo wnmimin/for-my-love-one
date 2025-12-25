@@ -1,22 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>For You</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Insyirah</title>
     <style>
-        body { background-color: #fff0f5; text-align: center; font-family: 'Arial', sans-serif; padding-top: 50px; }
-        h1 { color: #ff69b4; }
-        p { color: #333; font-size: 1.2rem; }
-        .heart { color: red; font-size: 50px; }
+        body {
+            background: #ffe4e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            z-index: 1;
+            max-width: 80%;
+        }
+        h1 { color: #d0205e; margin-bottom: 10px; }
+        p { color: #555; line-height: 1.6; }
+        .btn {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+        .btn:hover { transform: scale(1.1); background: #d0205e; }
+        #hidden-message { display: none; margin-top: 20px; font-weight: bold; color: #d0205e; }
+        
+        /* Floating Hearts Animation */
+        .heart {
+            position: absolute;
+            color: #ff69b4;
+            animation: float 5s linear infinite;
+            opacity: 0.6;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-10vh) rotate(360deg); }
+        }
     </style>
 </head>
 <body>
-    <div class="heart">❤️</div>
-    <h1>Happy Anniversary, [Her Name]!</h1>
-    <p>This is a little corner of the internet just for us.</p>
-    <p>I love you because...</p>
-    <ul>
-        <li>You're my best friend.</li>
-        <li>Your laugh is my favorite sound.</li>
-    </ul>
+
+    <div class="container">
+        <h1>Hi Insyirah ❤️</h1>
+        <p>I built this little corner of the internet just for you.</p>
+        <button class="btn" onclick="revealMessage()">Click for a surprise</button>
+        <div id="hidden-message">
+            <p>You make every day better just by being in it. <br> I am so lucky to have you!</p>
+        </div>
+    </div>
+
+    <script>
+        function revealMessage() {
+            document.getElementById('hidden-message').style.display = 'block';
+            for(let i=0; i<20; i++) { createHeart(); }
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.body.appendChild(heart);
+        }
+    </script>
 </body>
 </html>
+
