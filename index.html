@@ -10,22 +10,50 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
+            overflow-x: hidden;
         }
+
         .container {
             text-align: center;
             background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            z-index: 1;
-            max-width: 80%;
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            z-index: 10;
+            max-width: 450px;
+            width: 90%;
+            margin: 20px;
         }
-        h1 { color: #d0205e; margin-bottom: 10px; }
-        p { color: #555; line-height: 1.6; }
+
+        .profile-img {
+            width: 180px;
+            height: 180px;
+            border-radius: 20px;
+            object-fit: cover;
+            border: 5px solid #ff69b4;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+        }
+
+        h1 { color: #d0205e; margin: 10px 0; font-size: 1.8rem; }
+        
+        .days-counter {
+            font-size: 1.1rem;
+            color: #ff69b4;
+            font-weight: bold;
+            margin-bottom: 15px;
+            background: #fff0f5;
+            padding: 10px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        p { color: #444; line-height: 1.7; text-align: left; }
+        .intro-text { text-align: center; color: #666; }
+
         .btn {
             background: #ff69b4;
             color: white;
@@ -34,40 +62,94 @@
             border-radius: 25px;
             font-size: 18px;
             cursor: pointer;
-            transition: transform 0.2s;
-            margin-top: 20px;
+            transition: transform 0.2s, background 0.2s;
+            margin-top: 10px;
+            font-weight: bold;
         }
-        .btn:hover { transform: scale(1.1); background: #d0205e; }
-        #hidden-message { display: none; margin-top: 20px; font-weight: bold; color: #d0205e; }
-        
-        /* Floating Hearts Animation */
+
+        .btn:hover { transform: scale(1.05); background: #d0205e; }
+
+        #hidden-message {
+            display: none;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px dashed #ffc0cb;
+            animation: fadeIn 1.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         .heart {
-            position: absolute;
+            position: fixed;
             color: #ff69b4;
-            animation: float 5s linear infinite;
-            opacity: 0.6;
+            font-size: 20px;
+            animation: float 4s linear infinite;
+            top: 100vh;
+            z-index: 1;
         }
+
         @keyframes float {
-            0% { transform: translateY(100vh) rotate(0deg); }
-            100% { transform: translateY(-10vh) rotate(360deg); }
+            to {
+                transform: translateY(-110vh) rotate(360deg);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
+        <img src="IMG_5472.jpeg" alt="Us" class="profile-img">
+        
         <h1>Hi Insyirah ❤️</h1>
-        <p>I built this little corner of the internet just for you.</p>
-        <button class="btn" onclick="revealMessage()">Click for a surprise</button>
+        
+        <div class="days-counter" id="timer">Calculating our days...</div>
+        
+        <p class="intro-text">I built this for you because I wanted to show you how much you mean to me.</p>
+        
+        <button class="btn" onclick="revealMessage()">Read my letter</button>
+        
         <div id="hidden-message">
-            <p>You make every day better just by being in it. <br> I am so lucky to have you!</p>
+            <p>
+                Assalamualaikum sayang. This is me muhaimin, im sorry i have always hurt your feelings, 
+                everything you've said is true, its not that you keep wanting for more but instead, 
+                im not showing enough for you. <br><br>
+                
+                Sayang, please give me a chance to make everything right again, please also remember 
+                of our time together during highschool, we would eat together walk together sleep together. 
+                I hope we can do that again but because of our ldr status, i hope we can always call 
+                so we can spend time together much more. <br><br>
+                
+                I promise you that i will manage my time much better. I know that all the time i wasted 
+                on playing games instead of talking to you is something that i shouldn't have done, 
+                and i know you would have said its fine since i like gaming, but i think, in order 
+                spend my time better, i need to work on managing my time much better and start 
+                spending more with you. <br><br>
+                
+                Please know that i never feel burden by your request and im willing to do everything 
+                for you. I love you sayang💗
+            </p>
         </div>
     </div>
 
     <script>
+        // Set to 28 March 2024
+        const startDate = new Date(2024, 2, 28); 
+
+        function updateCounter() {
+            const now = new Date();
+            const diff = now - startDate;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('timer').innerHTML = days + " Days Together";
+        }
+
         function revealMessage() {
             document.getElementById('hidden-message').style.display = 'block';
-            for(let i=0; i<20; i++) { createHeart(); }
+            document.querySelector('.btn').style.display = 'none';
+            setInterval(createHeart, 300);
         }
 
         function createHeart() {
@@ -75,9 +157,12 @@
             heart.classList.add('heart');
             heart.innerHTML = '❤️';
             heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
             document.body.appendChild(heart);
+            setTimeout(() => { heart.remove(); }, 5000);
         }
+
+        updateCounter();
     </script>
 </body>
 </html>
