@@ -3,140 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For Insyirah</title>
+    <title>For My Sayang Insyirah</title>
     <style>
+        :root {
+            --primary-pink: #ff69b4;
+            --dark-pink: #d0205e;
+            --soft-bg: #ffe4e1;
+        }
+
         body {
-            background: #ffe4e1;
+            background: var(--soft-bg);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             overflow-x: hidden;
         }
 
         .container {
             text-align: center;
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             padding: 30px;
             border-radius: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 50px rgba(208, 32, 94, 0.15);
             z-index: 10;
             max-width: 450px;
             width: 90%;
             margin: 20px;
+            position: relative;
         }
 
         .profile-img {
             width: 180px;
             height: 180px;
-            border-radius: 20px;
+            border-radius: 50%; /* Circle for a softer look */
             object-fit: cover;
-            border: 5px solid #ff69b4;
+            border: 8px solid white;
+            outline: 3px solid var(--primary-pink);
             margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+            transition: transform 0.3s ease;
         }
 
-        h1 { color: #d0205e; margin: 10px 0; font-size: 1.8rem; }
+        .profile-img:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        h1 { color: var(--dark-pink); margin: 10px 0; font-size: 1.8rem; }
         
         .days-counter {
             font-size: 1.1rem;
-            color: #ff69b4;
-            font-weight: bold;
-            margin-bottom: 15px;
-            background: #fff0f5;
-            padding: 10px;
-            border-radius: 15px;
+            color: white;
+            background: var(--primary-pink);
+            padding: 8px 20px;
+            border-radius: 50px;
             display: inline-block;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
         }
 
-        p { color: #444; line-height: 1.7; text-align: left; }
-        .intro-text { text-align: center; color: #666; }
+        #letter-text {
+            color: #444;
+            line-height: 1.7;
+            text-align: left;
+            min-height: 100px;
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
 
         .btn {
-            background: #ff69b4;
+            background: var(--primary-pink);
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 18px;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 16px;
             cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
-            margin-top: 10px;
+            transition: all 0.3s ease;
             font-weight: bold;
         }
 
-        .btn:hover { transform: scale(1.05); background: #d0205e; }
-
-        #hidden-message {
-            display: none;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 2px dashed #ffc0cb;
-            animation: fadeIn 1.5s ease-in;
+        .btn:hover {
+            background: var(--dark-pink);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .btn-flower {
+            background: #ffa07a;
         }
 
-        .heart {
+        /* Floating Animation */
+        .heart, .flower {
             position: fixed;
-            color: #ff69b4;
-            font-size: 20px;
-            animation: float 4s linear infinite;
-            top: 100vh;
+            pointer-events: none;
             z-index: 1;
+            animation: floatUp 4s linear forwards;
         }
 
-        @keyframes float {
-            to {
-                transform: translateY(-110vh) rotate(360deg);
-                opacity: 0;
-            }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.5) rotate(360deg); opacity: 0; }
+        }
+
+        .music-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <img src="IMG_5472.jpeg" alt="Us" class="profile-img">
+        <img src="IMG_5472.jpeg" alt="Muhaimin & Insyirah" class="profile-img">
         
-        <h1>Hi Insyirah ❤️</h1>
+        <h1>For Insyirah ❤️</h1>
+        <div class="days-counter" id="timer">Loading our journey...</div>
         
-        <div class="days-counter" id="timer">Calculating our days...</div>
-        
-        <p class="intro-text">I built this for you because I wanted to show you how much you mean to me.</p>
-        
-        <button class="btn" onclick="revealMessage()">Read my letter</button>
-        
-        <div id="hidden-message">
-            <p>
-                Assalamualaikum sayang. This is me muhaimin, im sorry i have always hurt your feelings, 
-                everything you've said is true, its not that you keep wanting for more but instead, 
-                im not showing enough for you. <br><br>
-                
-                Sayang, please give me a chance to make everything right again, please also remember 
-                of our time together during highschool, we would eat together walk together sleep together. 
-                I hope we can do that again but because of our ldr status, i hope we can always call 
-                so we can spend time together much more. <br><br>
-                
-                I promise you that i will manage my time much better. I know that all the time i wasted 
-                on playing games instead of talking to you is something that i shouldn't have done, 
-                and i know you would have said its fine since i like gaming, but i think, in order 
-                spend my time better, i need to work on managing my time much better and start 
-                spending more with you. <br><br>
-                
-                Please know that i never feel burden by your request and im willing to do everything 
-                for you. I love you sayang💗
-            </p>
+        <div id="letter-text">
+            <p style="text-align: center;">I have something I want to tell you, sayang...</p>
         </div>
+        
+        <div class="controls">
+            <button class="btn" id="readBtn" onclick="startLetter()">Read My Letter</button>
+            <button class="btn btn-flower" onclick="spawnFlowers()">Send Her Flowers 🌸</button>
+        </div>
+
+        <p class="music-hint">I love you, Muhaimin.</p>
     </div>
 
     <script>
-        // Set to 28 March 2024
+        // 1. Setup Date (28 March 2024)
         const startDate = new Date(2024, 2, 28); 
 
         function updateCounter() {
@@ -145,24 +150,58 @@
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             document.getElementById('timer').innerHTML = days + " Days Together";
         }
+        updateCounter();
 
-        function revealMessage() {
-            document.getElementById('hidden-message').style.display = 'block';
-            document.querySelector('.btn').style.display = 'none';
-            setInterval(createHeart, 300);
+        // 2. Typing Animation Logic
+        const fullMessage = `Assalamualaikum sayang. This is me muhaimin, im sorry i have always hurt your feelings, everything you've said is true, its not that you keep wanting for more but instead, im not showing enough for you. <br><br>Sayang, please give me a chance to make everything right again, please also remember of our time together during highschool, we would eat together walk together sleep together. I hope we can do that again but because of our ldr status, i hope we can always call so we can spend time together much more. <br><br>I promise you that i will manage my time much better. I know that all the time i wasted on playing games instead of talking to you is something that i shouldn't have done, and i know you would have said its fine since i like gaming, but i think, in order spend my time better, i need to work on managing my time much better and start spending more with you. <br><br>Please know that i never feel burden by your request and im willing to do everything for you. I love you sayang💗`;
+
+        let index = 0;
+        function startLetter() {
+            document.getElementById('readBtn').style.display = 'none';
+            document.getElementById('letter-text').innerHTML = "";
+            typeWriter();
+            setInterval(createHeart, 400); // Start heart rain
         }
 
+        function typeWriter() {
+            if (index < fullMessage.length) {
+                let char = fullMessage.charAt(index);
+                if (char === "<") {
+                    document.getElementById('letter-text').innerHTML += "<br><br>";
+                    index += 8; // Skip the <br><br> tags
+                } else {
+                    document.getElementById('letter-text').innerHTML += char;
+                    index++;
+                }
+                setTimeout(typeWriter, 40); // Typing speed
+            }
+        }
+
+        // 3. Decorations (Hearts and Flowers)
         function createHeart() {
             const heart = document.createElement('div');
-            heart.classList.add('heart');
+            heart.className = 'heart';
             heart.innerHTML = '❤️';
             heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+            heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
             document.body.appendChild(heart);
-            setTimeout(() => { heart.remove(); }, 5000);
+            setTimeout(() => heart.remove(), 4000);
         }
 
-        updateCounter();
+        function spawnFlowers() {
+            for(let i=0; i<15; i++) {
+                setTimeout(() => {
+                    const flower = document.createElement('div');
+                    flower.className = 'flower';
+                    const flowers = ['🌸', '🌹', '🌷', '✨', '💖'];
+                    flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
+                    flower.style.left = Math.random() * 100 + 'vw';
+                    flower.style.fontSize = '25px';
+                    document.body.appendChild(flower);
+                    setTimeout(() => flower.remove(), 4000);
+                }, i * 100);
+            }
+        }
     </script>
 </body>
 </html>
