@@ -46,10 +46,6 @@
             transition: transform 0.3s ease;
         }
 
-        .profile-img:hover {
-            transform: scale(1.05) rotate(2deg);
-        }
-
         h1 { color: var(--dark-pink); margin: 10px 0; font-size: 1.8rem; }
         
         .days-counter {
@@ -100,16 +96,19 @@
             background: #ffa07a;
         }
 
+        /* Flower and Heart Styling */
         .heart, .flower {
             position: fixed;
             pointer-events: none;
             z-index: 999; 
-            animation: floatUp 4s linear forwards;
+            opacity: 0.8; /* 80% Opacity as requested */
+            animation: floatUp 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
 
         @keyframes floatUp {
-            0% { transform: translateY(100vh) scale(0); opacity: 1; }
-            100% { transform: translateY(-10vh) scale(1.5) rotate(360deg); opacity: 0; }
+            0% { transform: translateY(100vh) scale(0) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.8; transform: translateY(80vh) scale(1.2); }
+            100% { transform: translateY(-15vh) scale(1.5) rotate(360deg); opacity: 0; }
         }
 
         .music-hint {
@@ -157,7 +156,7 @@
             document.getElementById('readBtn').style.display = 'none';
             document.getElementById('letter-text').innerHTML = "";
             typeWriter();
-            setInterval(createHeart, 400); 
+            setInterval(createHeart, 300); 
         }
 
         function typeWriter() {
@@ -166,12 +165,10 @@
                 if (char === "<") {
                     document.getElementById('letter-text').innerHTML += "<br><br>";
                     index += 8; 
-                    // No delay for line breaks to keep it fast
                     typeWriter();
                 } else {
                     document.getElementById('letter-text').innerHTML += char;
                     index++;
-                    // Faster typing speed: 15ms instead of 40ms
                     setTimeout(typeWriter, 15); 
                 }
             }
@@ -182,23 +179,32 @@
             heart.className = 'heart';
             heart.innerHTML = '❤️';
             heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
             document.body.appendChild(heart);
-            setTimeout(() => heart.remove(), 4000);
+            setTimeout(() => heart.remove(), 3000);
         }
 
         function spawnFlowers() {
-            for(let i=0; i<20; i++) {
-                setTimeout(() => {
-                    const flower = document.createElement('div');
-                    flower.className = 'flower';
-                    const flowers = ['🌸', '🌹', '🌷', '✨', '💖'];
-                    flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
-                    flower.style.left = Math.random() * 100 + 'vw';
-                    flower.style.fontSize = (Math.random() * 10 + 25) + 'px';
-                    document.body.appendChild(flower);
-                    setTimeout(() => flower.remove(), 4000);
-                }, i * 100);
+            // Burst logic: 25 flowers all at once for surprise effect
+            for(let i=0; i<25; i++) {
+                const flower = document.createElement('div');
+                flower.className = 'flower';
+                const flowers = ['🌸', '🌹', '🌷', '✨', '💖'];
+                flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
+                
+                // Random position across the screen
+                flower.style.left = Math.random() * 100 + 'vw';
+                
+                // Random size
+                flower.style.fontSize = (Math.random() * 15 + 25) + 'px';
+                
+                // Random tiny delay so they pop in a fast sequence (0 to 0.3 seconds)
+                flower.style.animationDelay = (Math.random() * 0.3) + 's';
+                
+                document.body.appendChild(flower);
+                
+                // Remove after animation completes
+                setTimeout(() => flower.remove(), 3500);
             }
         }
     </script>
