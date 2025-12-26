@@ -32,31 +32,34 @@
             z-index: -1;
             display: flex;
             justify-content: space-around;
-            opacity: 0.8; /* Increased opacity since tint is gone */
+            opacity: 0.8; 
+            transition: opacity 1s ease, filter 1s ease;
+        }
+
+        /* Class to stop scrolling and highlight photos */
+        .gallery-mode .photo-column {
+            animation-play-state: paused !important;
+        }
+        .gallery-mode .photo-bg {
+            opacity: 1 !important;
+            overflow-y: auto; /* Allows her to scroll through manually */
         }
 
         .photo-column {
             display: flex;
             flex-direction: column;
-            gap: 25px; /* Spacing between photos */
+            gap: 25px;
             animation: scrollUp 60s linear infinite;
         }
 
         .photo-bg img {
-            /* CHANGED: Larger size for pictures */
             width: 250px; 
             height: 350px;
             object-fit: cover;
             border-radius: 20px;
             border: 6px solid white;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            filter: grayscale(0%); /* Full color */
             transition: transform 0.3s ease;
-        }
-
-        .photo-bg img:hover {
-            transform: scale(1.05);
-            z-index: 5;
         }
 
         @keyframes scrollUp {
@@ -64,11 +67,8 @@
             100% { transform: translateY(-50%); }
         }
 
-        /* REMOVED .bg-overlay style to clear the tint */
-
         .container {
             text-align: center;
-            /* Added stronger background to keep text readable without the tint */
             background: rgba(255, 255, 255, 0.95); 
             padding: 30px;
             border-radius: 30px;
@@ -78,6 +78,7 @@
             width: 90%;
             position: relative;
             backdrop-filter: blur(10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
         .profile-img {
@@ -103,12 +104,11 @@
         }
 
         #letter-text {
-            color: #222; /* Slightly darker text for better contrast */
+            color: #222;
             line-height: 1.7;
             text-align: left;
             min-height: 100px;
             font-size: 0.95rem;
-            font-weight: 500;
         }
 
         .controls { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
@@ -126,8 +126,8 @@
         }
 
         .btn:hover { transform: scale(1.05); background: var(--dark-pink); }
-
         .btn-flower { background: #ffa07a; }
+        .btn-gallery { background: #6495ED; margin-top: 10px; display: none; } /* Hidden until letter ends */
 
         .heart, .flower {
             position: fixed;
@@ -142,12 +142,24 @@
             10% { opacity: 0.8; }
             100% { transform: translateY(-15vh) translateX(var(--drift, 20px)) scale(1.5) rotate(360deg); opacity: 0; }
         }
+
+        /* Close gallery button */
+        #closeGallery {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: none;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
 
-    <div class="photo-bg">
+    <button id="closeGallery" class="btn" onclick="toggleGallery()">Back to Letter</button>
+
+    <div class="photo-bg" id="photoWall">
         <div class="photo-column">
+            <img src="2371fab0-bd36-4946-97bb-d52336347719.jpeg">
             <img src="Cf80417a-c6ea-45f3-898a-26486849ee3c.jpeg">
             <img src="IMG_5509.jpeg">
             <img src="IMG_5500.jpeg">
@@ -155,13 +167,12 @@
             <img src="IMG_5471.jpeg">
             <img src="IMG_5390.jpeg">
             <img src="IMG_5367.jpeg">
+            <img src="2371fab0-bd36-4946-97bb-d52336347719.jpeg">
             <img src="Cf80417a-c6ea-45f3-898a-26486849ee3c.jpeg">
             <img src="IMG_5509.jpeg">
             <img src="IMG_5500.jpeg">
             <img src="IMG_5480.jpeg">
             <img src="IMG_5471.jpeg">
-            <img src="IMG_5390.jpeg">
-            <img src="IMG_5367.jpeg">
         </div>
         <div class="photo-column" style="animation-duration: 75s; animation-direction: reverse;">
             <img src="IMG_5365.jpeg">
@@ -170,14 +181,14 @@
             <img src="IMG_5337.jpeg">
             <img src="IMG_5319.jpeg">
             <img src="IMG_5313.jpeg">
-            <img src="IMG_5365.jpeg">
+            <img src="2371fab0-bd36-4946-97bb-d52336347719.jpeg">
             <img src="IMG_5365.jpeg">
             <img src="IMG_5347.jpeg">
             <img src="IMG_5338.jpeg">
             <img src="IMG_5337.jpeg">
             <img src="IMG_5319.jpeg">
             <img src="IMG_5313.jpeg">
-            <img src="IMG_5365.jpeg">
+            <img src="2371fab0-bd36-4946-97bb-d52336347719.jpeg">
         </div>
     </div>
 
@@ -185,16 +196,17 @@
         <source src="Mitski - My Love Mine All Mine.mp3" type="audio/mpeg">
     </audio>
 
-    <div class="container">
+    <div class="container" id="mainContainer">
         <img src="IMG_5472.jpeg" alt="Muhaimin & Insyirah" class="profile-img">
         <h1>For Insyirah ❤️</h1>
-        <div class="days-counter" id="timer">Counting our days...</div>
+        <div class="days-counter" id="timer">Counting...</div>
         <div id="letter-text">
             <p style="text-align: center;">I have something I want to tell you, sayang...</p>
         </div>
         <div class="controls">
             <button class="btn" id="readBtn" onclick="startLetter()">Read My Letter</button>
             <button class="btn btn-flower" onclick="spawnFlowers()">Send Her Flowers 🌸</button>
+            <button class="btn btn-gallery" id="galleryBtn" onclick="toggleGallery()">View Our Gallery 🖼️</button>
         </div>
     </div>
 
@@ -235,6 +247,27 @@
                     index++;
                     setTimeout(typeWriter, 15); 
                 }
+            } else {
+                // Show Gallery Button when letter is done
+                document.getElementById('galleryBtn').style.display = 'block';
+            }
+        }
+
+        function toggleGallery() {
+            const body = document.body;
+            const container = document.getElementById('mainContainer');
+            const closeBtn = document.getElementById('closeGallery');
+            
+            if (!body.classList.contains('gallery-mode')) {
+                body.classList.add('gallery-mode');
+                container.style.opacity = '0';
+                container.style.pointerEvents = 'none';
+                closeBtn.style.display = 'block';
+            } else {
+                body.classList.remove('gallery-mode');
+                container.style.opacity = '1';
+                container.style.pointerEvents = 'auto';
+                closeBtn.style.display = 'none';
             }
         }
 
