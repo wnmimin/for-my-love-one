@@ -28,7 +28,7 @@
             padding: 30px;
             border-radius: 30px;
             box-shadow: 0 20px 50px rgba(208, 32, 94, 0.15);
-            z-index: 10; /* Lower than the flowers */
+            z-index: 10;
             max-width: 450px;
             width: 90%;
             margin: 20px;
@@ -100,7 +100,6 @@
             background: #ffa07a;
         }
 
-        /* CHANGED: Increased z-index to be higher than .container */
         .heart, .flower {
             position: fixed;
             pointer-events: none;
@@ -137,7 +136,7 @@
             <button class="btn btn-flower" onclick="spawnFlowers()">Send Her Flowers 🌸</button>
         </div>
 
-        <p class="music-hint">I love you, Muhaimin.</p>
+        <p class="music-hint">I love you, Insyirah Sayang.</p>
     </div>
 
     <script>
@@ -151,7 +150,7 @@
         }
         updateCounter();
 
-        const fullMessage = `Assalamualaikum sayang. This is me muhaimin, im sorry i have always hurt your feelings, everything you've said is true, its not that you keep wanting for more but instead, im not showing enough for you. <br><br>Sayang, please give me a chance to make everything right again, please also remember of our time together during highschool, we would eat together walk together sleep together. I hope we can do that again but because of our ldr status, i hope we can always call so we can spend time together much more. <br><br>I promise you that i will manage my time much better. I know that all the time i wasted on playing games instead of talking to you is something that i shouldn't have done, and i know you would have said its fine since i like gaming, but i think, in order spend my time better, i need to work on managing my time much better and start spending more with you. <br><br>Please know that i never feel burden by your request and im willing to do everything for you. I love you sayang💗`;
+        const fullMessage = `Assalamualaikum sayang. This is me muhaimin, im sorry i have always hurt your feelings, everything you've said is true, its not that you keep wanting for more but instead, im not showing enough for you. <br><br>Sayang, please give me a chance to make everything right again, please also remember of our time together during highschool, we would eat together walk together sleep together. I hope we can do that again but because of our ldr status, i hope we can always call so we can spend time together much more. <br><br>I promise you that i will manage my time much better. I know that all the time i wasted on playing games instead of talking to you is something that i shouldn't have done, and i know you would have said its fine since i like gaming, but i think, in order to spend my time on something meaningful, i need to work on managing my time much better and start spending more with you. <br><br>Please know that i never feel burden by your request and im willing to do everything for you. I love you sayang💗`;
 
         let index = 0;
         function startLetter() {
@@ -167,11 +166,14 @@
                 if (char === "<") {
                     document.getElementById('letter-text').innerHTML += "<br><br>";
                     index += 8; 
+                    // No delay for line breaks to keep it fast
+                    typeWriter();
                 } else {
                     document.getElementById('letter-text').innerHTML += char;
                     index++;
+                    // Faster typing speed: 15ms instead of 40ms
+                    setTimeout(typeWriter, 15); 
                 }
-                setTimeout(typeWriter, 40); 
             }
         }
 
@@ -186,14 +188,14 @@
         }
 
         function spawnFlowers() {
-            for(let i=0; i<20; i++) { // Increased count slightly
+            for(let i=0; i<20; i++) {
                 setTimeout(() => {
                     const flower = document.createElement('div');
                     flower.className = 'flower';
                     const flowers = ['🌸', '🌹', '🌷', '✨', '💖'];
                     flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
                     flower.style.left = Math.random() * 100 + 'vw';
-                    flower.style.fontSize = (Math.random() * 10 + 25) + 'px'; // Varied sizes
+                    flower.style.fontSize = (Math.random() * 10 + 25) + 'px';
                     document.body.appendChild(flower);
                     setTimeout(() => flower.remove(), 4000);
                 }, i * 100);
