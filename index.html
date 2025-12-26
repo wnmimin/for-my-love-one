@@ -96,18 +96,28 @@
             background: #ffa07a;
         }
 
+        /* Flower and Heart Styling */
         .heart, .flower {
             position: fixed;
             pointer-events: none;
             z-index: 999; 
             opacity: 0.8; 
-            animation: floatUp 4s linear forwards;
+            animation: floatUp 4s ease-out forwards;
         }
 
         @keyframes floatUp {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            10% { opacity: 0.8; }
-            100% { transform: translateY(-10vh) scale(1.5) rotate(360deg); opacity: 0; }
+            0% { 
+                transform: translateY(100vh) translateX(0) scale(0); 
+                opacity: 0; 
+            }
+            10% { 
+                opacity: 0.8; 
+            }
+            100% { 
+                /* Drift effect added here */
+                transform: translateY(-15vh) translateX(var(--drift, 20px)) scale(1.5) rotate(360deg); 
+                opacity: 0; 
+            }
         }
 
         .music-hint {
@@ -158,11 +168,8 @@
 
         let index = 0;
         function startLetter() {
-            // Logic to play music at the correct time
             music.currentTime = startTime;
-            music.play().catch(error => {
-                console.log("Audio play failed. Ensure the file is in the same folder.");
-            });
+            music.play().catch(e => console.log("Playback blocked or file missing"));
 
             document.getElementById('readBtn').style.display = 'none';
             document.getElementById('letter-text').innerHTML = "";
@@ -196,17 +203,24 @@
         }
 
         function spawnFlowers() {
-            for(let i=0; i<30; i++) {
+            const intensity = 80; // High intensity
+            for(let i=0; i<intensity; i++) {
                 setTimeout(() => {
                     const flower = document.createElement('div');
                     flower.className = 'flower';
-                    const flowers = ['🌸', '🌹', '🌷', '✨', '💖'];
+                    const flowers = ['🌸', '🌹', '🌷', '✨', '💖', '🌼', '🌺'];
                     flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
+                    
                     flower.style.left = Math.random() * 100 + 'vw';
-                    flower.style.fontSize = (Math.random() * 10 + 25) + 'px';
+                    flower.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                    
+                    // Set random drift for the animation
+                    const drift = (Math.random() * 60 - 30) + 'px';
+                    flower.style.setProperty('--drift', drift);
+
                     document.body.appendChild(flower);
                     setTimeout(() => flower.remove(), 4000);
-                }, i * 40); 
+                }, i * 25); // Dense timing (25ms)
             }
         }
     </script>
