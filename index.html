@@ -19,7 +19,7 @@
             min-height: 100vh;
             margin: 0;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden; /* Prevent body scroll, we scroll the photo-bg instead */
+            overflow: hidden; 
         }
 
         /* PHOTO SCROLLING BACKGROUND */
@@ -34,20 +34,18 @@
             justify-content: space-around;
             opacity: 0.8; 
             transition: opacity 1s ease;
-            overflow: hidden; /* Default hidden */
         }
 
-        /* Gallery Mode Styling */
         .gallery-mode .photo-bg {
             opacity: 1 !important;
-            z-index: 20; /* Bring to front */
-            overflow-y: auto; /* Allow manual scrolling */
-            background: var(--soft-bg); /* Solid bg for better viewing */
-            padding-top: 80px; /* Space for the back button */
+            z-index: 20; 
+            overflow-y: auto; 
+            background: var(--soft-bg);
+            padding-top: 80px; 
         }
 
         .gallery-mode .photo-column {
-            animation: none !important; /* Stop auto-scrolling */
+            animation: none !important;
         }
 
         .photo-column {
@@ -71,51 +69,77 @@
             100% { transform: translateY(-50%); }
         }
 
+        /* MAIN CONTAINER */
         .container {
             text-align: center;
             background: rgba(255, 255, 255, 0.95); 
-            padding: 30px;
+            padding: 25px;
             border-radius: 30px;
             box-shadow: 0 20px 50px rgba(208, 32, 94, 0.3);
             z-index: 10;
             max-width: 450px;
-            width: 90%;
+            width: 85%;
+            /* FIXED: Height and Scroll for mobile */
+            max-height: 85vh; 
+            display: flex;
+            flex-direction: column;
             position: relative;
             backdrop-filter: blur(10px);
             transition: opacity 0.5s ease;
         }
 
-        .profile-img {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 8px solid white;
-            outline: 3px solid var(--primary-pink);
-            margin-bottom: 20px;
+        .scroll-area {
+            overflow-y: auto;
+            flex-grow: 1;
+            padding-right: 5px;
+            margin-bottom: 15px;
         }
 
-        h1 { color: var(--dark-pink); margin: 10px 0; font-size: 1.8rem; }
+        /* Custom scrollbar for a cleaner look */
+        .scroll-area::-webkit-scrollbar {
+            width: 5px;
+        }
+        .scroll-area::-webkit-scrollbar-thumb {
+            background: var(--primary-pink);
+            border-radius: 10px;
+        }
+
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 6px solid white;
+            outline: 2px solid var(--primary-pink);
+            margin: 0 auto 15px;
+        }
+
+        h1 { color: var(--dark-pink); margin: 5px 0; font-size: 1.6rem; }
         
         .days-counter {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: white;
             background: var(--primary-pink);
-            padding: 8px 20px;
+            padding: 6px 18px;
             border-radius: 50px;
             display: inline-block;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         #letter-text {
             color: #222;
-            line-height: 1.7;
+            line-height: 1.6;
             text-align: left;
-            min-height: 100px;
             font-size: 0.95rem;
         }
 
-        .controls { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .controls { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            background: white;
+            padding-top: 10px;
+        }
 
         .btn {
             background: var(--primary-pink);
@@ -126,14 +150,11 @@
             font-size: 16px;
             cursor: pointer;
             font-weight: bold;
-            transition: all 0.2s;
         }
 
-        .btn:hover { transform: scale(1.05); background: var(--dark-pink); }
         .btn-flower { background: #ffa07a; }
-        .btn-gallery { background: #6495ED; margin-top: 10px; display: none; } 
+        .btn-gallery { background: #6495ED; display: none; } 
 
-        /* Back to Letter Button (Fixed while in gallery) */
         #closeGallery {
             position: fixed;
             top: 20px;
@@ -141,7 +162,6 @@
             transform: translateX(-50%);
             display: none;
             z-index: 100;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
         .heart, .flower {
@@ -206,9 +226,13 @@
         <img src="IMG_5472.jpeg" alt="Muhaimin & Insyirah" class="profile-img">
         <h1>For Insyirah ❤️</h1>
         <div class="days-counter" id="timer">Counting...</div>
-        <div id="letter-text">
-            <p style="text-align: center;">I have something I want to tell you, sayang...</p>
+        
+        <div class="scroll-area" id="scrollContainer">
+            <div id="letter-text">
+                <p style="text-align: center;">I have something I want to tell you, sayang...</p>
+            </div>
         </div>
+
         <div class="controls">
             <button class="btn" id="readBtn" onclick="startLetter()">Read My Letter</button>
             <button class="btn btn-flower" onclick="spawnFlowers()">Send Her Flowers 🌸</button>
@@ -242,17 +266,21 @@
         }
 
         function typeWriter() {
+            const scrollArea = document.getElementById('scrollContainer');
             if (index < fullMessage.length) {
                 let char = fullMessage.charAt(index);
                 if (char === "<") {
                     document.getElementById('letter-text').innerHTML += "<br><br>";
                     index += 8; 
-                    typeWriter();
                 } else {
                     document.getElementById('letter-text').innerHTML += char;
                     index++;
-                    setTimeout(typeWriter, 15); 
                 }
+                
+                // Auto-scroll down while typing so she sees the new words
+                scrollArea.scrollTop = scrollArea.scrollHeight;
+                
+                setTimeout(typeWriter, 20); 
             } else {
                 document.getElementById('galleryBtn').style.display = 'block';
             }
@@ -269,7 +297,7 @@
                 container.style.opacity = '0';
                 container.style.pointerEvents = 'none';
                 closeBtn.style.display = 'block';
-                photoWall.scrollTop = 0; // Start at the top
+                photoWall.scrollTop = 0;
             } else {
                 body.classList.remove('gallery-mode');
                 container.style.opacity = '1';
