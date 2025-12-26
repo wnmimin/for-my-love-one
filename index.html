@@ -19,7 +19,7 @@
             min-height: 100vh;
             margin: 0;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden;
+            overflow: hidden; /* Prevent body scroll, we scroll the photo-bg instead */
         }
 
         /* PHOTO SCROLLING BACKGROUND */
@@ -33,16 +33,21 @@
             display: flex;
             justify-content: space-around;
             opacity: 0.8; 
-            transition: opacity 1s ease, filter 1s ease;
+            transition: opacity 1s ease;
+            overflow: hidden; /* Default hidden */
         }
 
-        /* Class to stop scrolling and highlight photos */
-        .gallery-mode .photo-column {
-            animation-play-state: paused !important;
-        }
+        /* Gallery Mode Styling */
         .gallery-mode .photo-bg {
             opacity: 1 !important;
-            overflow-y: auto; /* Allows her to scroll through manually */
+            z-index: 20; /* Bring to front */
+            overflow-y: auto; /* Allow manual scrolling */
+            background: var(--soft-bg); /* Solid bg for better viewing */
+            padding-top: 80px; /* Space for the back button */
+        }
+
+        .gallery-mode .photo-column {
+            animation: none !important; /* Stop auto-scrolling */
         }
 
         .photo-column {
@@ -59,7 +64,6 @@
             border-radius: 20px;
             border: 6px solid white;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
         }
 
         @keyframes scrollUp {
@@ -78,7 +82,7 @@
             width: 90%;
             position: relative;
             backdrop-filter: blur(10px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            transition: opacity 0.5s ease;
         }
 
         .profile-img {
@@ -127,7 +131,18 @@
 
         .btn:hover { transform: scale(1.05); background: var(--dark-pink); }
         .btn-flower { background: #ffa07a; }
-        .btn-gallery { background: #6495ED; margin-top: 10px; display: none; } /* Hidden until letter ends */
+        .btn-gallery { background: #6495ED; margin-top: 10px; display: none; } 
+
+        /* Back to Letter Button (Fixed while in gallery) */
+        #closeGallery {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            z-index: 100;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
 
         .heart, .flower {
             position: fixed;
@@ -142,25 +157,15 @@
             10% { opacity: 0.8; }
             100% { transform: translateY(-15vh) translateX(var(--drift, 20px)) scale(1.5) rotate(360deg); opacity: 0; }
         }
-
-        /* Close gallery button */
-        #closeGallery {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            display: none;
-            z-index: 1000;
-        }
     </style>
 </head>
 <body>
 
-    <button id="closeGallery" class="btn" onclick="toggleGallery()">Back to Letter</button>
+    <button id="closeGallery" class="btn" onclick="toggleGallery()">Back to Letter ↩️</button>
 
     <div class="photo-bg" id="photoWall">
         <div class="photo-column">
             <img src="2371fab0-bd36-4946-97bb-d52336347719.jpeg">
-            <img src="Cf80417a-c6ea-45f3-898a-26486849ee3c.jpeg">
             <img src="IMG_5509.jpeg">
             <img src="IMG_5500.jpeg">
             <img src="IMG_5480.jpeg">
@@ -168,11 +173,12 @@
             <img src="IMG_5390.jpeg">
             <img src="IMG_5367.jpeg">
             <img src="2371fab0-bd36-4946-97bb-d52336347719.jpeg">
-            <img src="Cf80417a-c6ea-45f3-898a-26486849ee3c.jpeg">
             <img src="IMG_5509.jpeg">
             <img src="IMG_5500.jpeg">
             <img src="IMG_5480.jpeg">
             <img src="IMG_5471.jpeg">
+            <img src="IMG_5390.jpeg">
+            <img src="IMG_5367.jpeg">
         </div>
         <div class="photo-column" style="animation-duration: 75s; animation-direction: reverse;">
             <img src="IMG_5365.jpeg">
@@ -248,7 +254,6 @@
                     setTimeout(typeWriter, 15); 
                 }
             } else {
-                // Show Gallery Button when letter is done
                 document.getElementById('galleryBtn').style.display = 'block';
             }
         }
@@ -257,12 +262,14 @@
             const body = document.body;
             const container = document.getElementById('mainContainer');
             const closeBtn = document.getElementById('closeGallery');
+            const photoWall = document.getElementById('photoWall');
             
             if (!body.classList.contains('gallery-mode')) {
                 body.classList.add('gallery-mode');
                 container.style.opacity = '0';
                 container.style.pointerEvents = 'none';
                 closeBtn.style.display = 'block';
+                photoWall.scrollTop = 0; // Start at the top
             } else {
                 body.classList.remove('gallery-mode');
                 container.style.opacity = '1';
