@@ -96,12 +96,11 @@
             background: #ffa07a;
         }
 
-        /* Flower and Heart Styling */
         .heart, .flower {
             position: fixed;
             pointer-events: none;
             z-index: 999; 
-            opacity: 0.8; /* 80% Opacity */
+            opacity: 0.8; 
             animation: floatUp 4s linear forwards;
         }
 
@@ -119,6 +118,10 @@
     </style>
 </head>
 <body>
+
+    <audio id="bgMusic">
+        <source src="Mitski - My Love Mine All Mine.mp3" type="audio/mpeg">
+    </audio>
 
     <div class="container">
         <img src="IMG_5472.jpeg" alt="Muhaimin & Insyirah" class="profile-img">
@@ -140,6 +143,8 @@
 
     <script>
         const startDate = new Date(2024, 2, 28); 
+        const music = document.getElementById('bgMusic');
+        const startTime = 25; // Song starts at 25 seconds
 
         function updateCounter() {
             const now = new Date();
@@ -153,6 +158,12 @@
 
         let index = 0;
         function startLetter() {
+            // Logic to play music at the correct time
+            music.currentTime = startTime;
+            music.play().catch(error => {
+                console.log("Audio play failed. Ensure the file is in the same folder.");
+            });
+
             document.getElementById('readBtn').style.display = 'none';
             document.getElementById('letter-text').innerHTML = "";
             typeWriter();
@@ -185,7 +196,6 @@
         }
 
         function spawnFlowers() {
-            // Generates 30 flowers with a 40ms gap between each
             for(let i=0; i<30; i++) {
                 setTimeout(() => {
                     const flower = document.createElement('div');
@@ -195,9 +205,8 @@
                     flower.style.left = Math.random() * 100 + 'vw';
                     flower.style.fontSize = (Math.random() * 10 + 25) + 'px';
                     document.body.appendChild(flower);
-                    
                     setTimeout(() => flower.remove(), 4000);
-                }, i * 40); // 40ms interval as requested
+                }, i * 40); 
             }
         }
     </script>
