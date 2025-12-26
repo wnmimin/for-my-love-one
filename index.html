@@ -19,20 +19,70 @@
             min-height: 100vh;
             margin: 0;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow-x: hidden;
+            overflow: hidden;
+        }
+
+        /* PHOTO SCROLLING BACKGROUND */
+        .photo-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            display: flex;
+            justify-content: space-around;
+            opacity: 0.5; 
+        }
+
+        .photo-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: scrollUp 60s linear infinite;
+        }
+
+        .photo-bg img {
+            width: 160px;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 15px;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            filter: grayscale(30%);
+            transition: filter 0.3s ease;
+        }
+
+        .photo-bg img:hover {
+            filter: grayscale(0%);
+        }
+
+        @keyframes scrollUp {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 228, 225, 0.5);
+            z-index: 0;
         }
 
         .container {
             text-align: center;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.92);
             padding: 30px;
             border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(208, 32, 94, 0.15);
+            box-shadow: 0 20px 50px rgba(208, 32, 94, 0.2);
             z-index: 10;
             max-width: 450px;
             width: 90%;
-            margin: 20px;
             position: relative;
+            backdrop-filter: blur(8px);
         }
 
         .profile-img {
@@ -43,7 +93,6 @@
             border: 8px solid white;
             outline: 3px solid var(--primary-pink);
             margin-bottom: 20px;
-            transition: transform 0.3s ease;
         }
 
         h1 { color: var(--dark-pink); margin: 10px 0; font-size: 1.8rem; }
@@ -56,7 +105,6 @@
             border-radius: 50px;
             display: inline-block;
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
         }
 
         #letter-text {
@@ -67,12 +115,7 @@
             font-size: 0.95rem;
         }
 
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
-        }
+        .controls { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
 
         .btn {
             background: var(--primary-pink);
@@ -82,21 +125,14 @@
             border-radius: 50px;
             font-size: 16px;
             cursor: pointer;
-            transition: all 0.3s ease;
             font-weight: bold;
+            transition: transform 0.2s;
         }
 
-        .btn:hover {
-            background: var(--dark-pink);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
+        .btn:hover { transform: scale(1.05); }
 
-        .btn-flower {
-            background: #ffa07a;
-        }
+        .btn-flower { background: #ffa07a; }
 
-        /* Flower and Heart Styling */
         .heart, .flower {
             position: fixed;
             pointer-events: none;
@@ -106,28 +142,49 @@
         }
 
         @keyframes floatUp {
-            0% { 
-                transform: translateY(100vh) translateX(0) scale(0); 
-                opacity: 0; 
-            }
-            10% { 
-                opacity: 0.8; 
-            }
-            100% { 
-                /* Drift effect added here */
-                transform: translateY(-15vh) translateX(var(--drift, 20px)) scale(1.5) rotate(360deg); 
-                opacity: 0; 
-            }
-        }
-
-        .music-hint {
-            font-size: 12px;
-            color: #888;
-            margin-top: 15px;
+            0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+            10% { opacity: 0.8; }
+            100% { transform: translateY(-15vh) translateX(var(--drift, 20px)) scale(1.5) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
 <body>
+
+    <div class="photo-bg">
+        <div class="photo-column">
+            <img src="Cf80417a-c6ea-45f3-898a-26486849ee3c.jpeg">
+            <img src="IMG_5509.jpeg">
+            <img src="IMG_5500.jpeg">
+            <img src="IMG_5480.jpeg">
+            <img src="IMG_5471.jpeg">
+            <img src="IMG_5390.jpeg">
+            <img src="IMG_5367.jpeg">
+            <img src="Cf80417a-c6ea-45f3-898a-26486849ee3c.jpeg">
+            <img src="IMG_5509.jpeg">
+            <img src="IMG_5500.jpeg">
+            <img src="IMG_5480.jpeg">
+            <img src="IMG_5471.jpeg">
+            <img src="IMG_5390.jpeg">
+            <img src="IMG_5367.jpeg">
+        </div>
+        <div class="photo-column" style="animation-duration: 75s; animation-direction: reverse;">
+            <img src="IMG_5365.jpeg">
+            <img src="IMG_5347.jpeg">
+            <img src="IMG_5338.jpeg">
+            <img src="IMG_5337.jpeg">
+            <img src="IMG_5319.jpeg">
+            <img src="IMG_5313.jpeg">
+            <img src="IMG_5365.jpeg">
+            <img src="IMG_5365.jpeg">
+            <img src="IMG_5347.jpeg">
+            <img src="IMG_5338.jpeg">
+            <img src="IMG_5337.jpeg">
+            <img src="IMG_5319.jpeg">
+            <img src="IMG_5313.jpeg">
+            <img src="IMG_5365.jpeg">
+        </div>
+    </div>
+    <div class="bg-overlay"></div>
 
     <audio id="bgMusic">
         <source src="Mitski - My Love Mine All Mine.mp3" type="audio/mpeg">
@@ -135,26 +192,21 @@
 
     <div class="container">
         <img src="IMG_5472.jpeg" alt="Muhaimin & Insyirah" class="profile-img">
-        
         <h1>For Insyirah ❤️</h1>
-        <div class="days-counter" id="timer">Loading our journey...</div>
-        
+        <div class="days-counter" id="timer">Counting our days...</div>
         <div id="letter-text">
             <p style="text-align: center;">I have something I want to tell you, sayang...</p>
         </div>
-        
         <div class="controls">
             <button class="btn" id="readBtn" onclick="startLetter()">Read My Letter</button>
             <button class="btn btn-flower" onclick="spawnFlowers()">Send Her Flowers 🌸</button>
         </div>
-
-        <p class="music-hint">I love you, Insyirah Sayang.</p>
     </div>
 
     <script>
         const startDate = new Date(2024, 2, 28); 
         const music = document.getElementById('bgMusic');
-        const startTime = 25; // Song starts at 25 seconds
+        const startTime = 25;
 
         function updateCounter() {
             const now = new Date();
@@ -169,8 +221,7 @@
         let index = 0;
         function startLetter() {
             music.currentTime = startTime;
-            music.play().catch(e => console.log("Playback blocked or file missing"));
-
+            music.play().catch(e => console.log("Music play blocked"));
             document.getElementById('readBtn').style.display = 'none';
             document.getElementById('letter-text').innerHTML = "";
             typeWriter();
@@ -203,24 +254,19 @@
         }
 
         function spawnFlowers() {
-            const intensity = 80; // High intensity
-            for(let i=0; i<intensity; i++) {
+            for(let i=0; i<80; i++) {
                 setTimeout(() => {
                     const flower = document.createElement('div');
                     flower.className = 'flower';
                     const flowers = ['🌸', '🌹', '🌷', '✨', '💖', '🌼', '🌺'];
                     flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
-                    
                     flower.style.left = Math.random() * 100 + 'vw';
                     flower.style.fontSize = (Math.random() * 20 + 20) + 'px';
-                    
-                    // Set random drift for the animation
                     const drift = (Math.random() * 60 - 30) + 'px';
                     flower.style.setProperty('--drift', drift);
-
                     document.body.appendChild(flower);
                     setTimeout(() => flower.remove(), 4000);
-                }, i * 25); // Dense timing (25ms)
+                }, i * 25);
             }
         }
     </script>
