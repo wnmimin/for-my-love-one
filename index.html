@@ -28,7 +28,7 @@
             padding: 30px;
             border-radius: 30px;
             box-shadow: 0 20px 50px rgba(208, 32, 94, 0.15);
-            z-index: 10;
+            z-index: 10; /* Lower than the flowers */
             max-width: 450px;
             width: 90%;
             margin: 20px;
@@ -36,34 +36,39 @@
         }
 
         .profile-img {
-            width: 150px;
-            height: 150px;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
             object-fit: cover;
-            border: 5px solid var(--primary-pink);
+            border: 8px solid white;
+            outline: 3px solid var(--primary-pink);
             margin-bottom: 20px;
+            transition: transform 0.3s ease;
         }
 
-        h1 { color: var(--dark-pink); margin: 10px 0; font-size: 1.5rem; }
+        .profile-img:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        h1 { color: var(--dark-pink); margin: 10px 0; font-size: 1.8rem; }
         
         .days-counter {
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: white;
             background: var(--primary-pink);
-            padding: 5px 15px;
+            padding: 8px 20px;
             border-radius: 50px;
             display: inline-block;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
         }
 
         #letter-text {
             color: #444;
-            line-height: 1.6;
+            line-height: 1.7;
             text-align: left;
-            font-size: 0.9rem;
-            max-height: 300px;
-            overflow-y: auto;
-            padding-right: 5px;
+            min-height: 100px;
+            font-size: 0.95rem;
         }
 
         .controls {
@@ -81,40 +86,25 @@
             border-radius: 50px;
             font-size: 16px;
             cursor: pointer;
+            transition: all 0.3s ease;
             font-weight: bold;
-            transition: 0.3s;
         }
 
-        /* Question Section */
-        #question-area {
-            display: none;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 2px solid var(--soft-bg);
+        .btn:hover {
+            background: var(--dark-pink);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
-        .choice-btns {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 15px;
-            position: relative;
-            height: 60px;
+        .btn-flower {
+            background: #ffa07a;
         }
 
-        #no-btn {
-            background: #999;
-            position: absolute;
-        }
-
-        #yes-btn {
-            background: #4CAF50;
-        }
-
+        /* CHANGED: Increased z-index to be higher than .container */
         .heart, .flower {
             position: fixed;
             pointer-events: none;
-            z-index: 1;
+            z-index: 999; 
             animation: floatUp 4s linear forwards;
         }
 
@@ -122,38 +112,36 @@
             0% { transform: translateY(100vh) scale(0); opacity: 1; }
             100% { transform: translateY(-10vh) scale(1.5) rotate(360deg); opacity: 0; }
         }
+
+        .music-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <img src="IMG_5472.jpeg" alt="Us" class="profile-img">
+        <img src="IMG_5472.jpeg" alt="Muhaimin & Insyirah" class="profile-img">
         
         <h1>For Insyirah ❤️</h1>
-        <div class="days-counter" id="timer">Counting our days...</div>
+        <div class="days-counter" id="timer">Loading our journey...</div>
         
         <div id="letter-text">
-            <p style="text-align: center;">I have something important to say...</p>
+            <p style="text-align: center;">I have something I want to tell you, sayang...</p>
         </div>
         
-        <div class="controls" id="initial-controls">
-            <button class="btn" onclick="startLetter()">Read My Letter</button>
+        <div class="controls">
+            <button class="btn" id="readBtn" onclick="startLetter()">Read My Letter</button>
+            <button class="btn btn-flower" onclick="spawnFlowers()">Send Her Flowers 🌸</button>
         </div>
 
-        <div id="question-area">
-            <h3 style="color: var(--dark-pink);">Will you give me one more chance?</h3>
-            <div class="choice-btns">
-                <button class="btn" id="yes-btn" onclick="sayYes()">Yes</button>
-                <button class="btn" id="no-btn" onmouseover="moveNo()" onclick="moveNo()">No</button>
-            </div>
-        </div>
-        
-        <button class="btn btn-flower" id="flower-btn" style="display:none; margin-top:20px; background:#ffa07a;" onclick="spawnFlowers()">Send Flowers 🌸</button>
+        <p class="music-hint">I love you, Muhaimin.</p>
     </div>
 
     <script>
         const startDate = new Date(2024, 2, 28); 
-        const fullMessage = `Assalamualaikum sayang. This is me muhaimin, im sorry i have always hurt your feelings, everything you've said is true, its not that you keep wanting for more but instead, im not showing enough for you. <br><br>Sayang, please give me a chance to make everything right again, please also remember of our time together during highschool, we would eat together walk together sleep together. I hope we can do that again but because of our ldr status, i hope we can always call so we can spend time together much more. <br><br>I promise you that i will manage my time much better. I know that all the time i wasted on playing games instead of talking to you is something that i shouldn't have done, and i know you would have said its fine since i like gaming, but i think, in order spend my time better, i need to work on managing my time much better and start spending more with you. <br><br>Please know that i never feel burden by your request and im willing to do everything for you. I love you sayang💗`;
 
         function updateCounter() {
             const now = new Date();
@@ -163,44 +151,28 @@
         }
         updateCounter();
 
+        const fullMessage = `Assalamualaikum sayang. This is me muhaimin, im sorry i have always hurt your feelings, everything you've said is true, its not that you keep wanting for more but instead, im not showing enough for you. <br><br>Sayang, please give me a chance to make everything right again, please also remember of our time together during highschool, we would eat together walk together sleep together. I hope we can do that again but because of our ldr status, i hope we can always call so we can spend time together much more. <br><br>I promise you that i will manage my time much better. I know that all the time i wasted on playing games instead of talking to you is something that i shouldn't have done, and i know you would have said its fine since i like gaming, but i think, in order spend my time better, i need to work on managing my time much better and start spending more with you. <br><br>Please know that i never feel burden by your request and im willing to do everything for you. I love you sayang💗`;
+
         let index = 0;
         function startLetter() {
-            document.getElementById('initial-controls').style.display = 'none';
+            document.getElementById('readBtn').style.display = 'none';
             document.getElementById('letter-text').innerHTML = "";
             typeWriter();
-            setInterval(createHeart, 500);
+            setInterval(createHeart, 400); 
         }
 
         function typeWriter() {
             if (index < fullMessage.length) {
                 let char = fullMessage.charAt(index);
                 if (char === "<") {
-                    document.getElementById('letter-text').innerHTML += "<br>";
-                    index += 4;
+                    document.getElementById('letter-text').innerHTML += "<br><br>";
+                    index += 8; 
                 } else {
                     document.getElementById('letter-text').innerHTML += char;
                     index++;
                 }
-                setTimeout(typeWriter, 40);
-            } else {
-                // Show question after typing finishes
-                document.getElementById('question-area').style.display = 'block';
+                setTimeout(typeWriter, 40); 
             }
-        }
-
-        // The "Moving No Button" Logic
-        function moveNo() {
-            const noBtn = document.getElementById('no-btn');
-            const x = Math.random() * (window.innerWidth - 100);
-            const y = Math.random() * (window.innerHeight - 50);
-            noBtn.style.left = Math.random() * 100 + 'px'; // Moves slightly within the area
-            noBtn.style.top = (Math.random() * 40 - 20) + 'px';
-        }
-
-        function sayYes() {
-            document.getElementById('question-area').innerHTML = "<h2 style='color:#4CAF50;'>Thank you, Sayang! ❤️ I won't let you down.</h2>";
-            document.getElementById('flower-btn').style.display = 'inline-block';
-            spawnFlowers();
         }
 
         function createHeart() {
@@ -208,18 +180,20 @@
             heart.className = 'heart';
             heart.innerHTML = '❤️';
             heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
             document.body.appendChild(heart);
             setTimeout(() => heart.remove(), 4000);
         }
 
         function spawnFlowers() {
-            for(let i=0; i<20; i++) {
+            for(let i=0; i<20; i++) { // Increased count slightly
                 setTimeout(() => {
                     const flower = document.createElement('div');
                     flower.className = 'flower';
                     const flowers = ['🌸', '🌹', '🌷', '✨', '💖'];
                     flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
                     flower.style.left = Math.random() * 100 + 'vw';
+                    flower.style.fontSize = (Math.random() * 10 + 25) + 'px'; // Varied sizes
                     document.body.appendChild(flower);
                     setTimeout(() => flower.remove(), 4000);
                 }, i * 100);
