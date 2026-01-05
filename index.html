@@ -44,9 +44,7 @@
             padding-top: 80px; 
         }
 
-        .gallery-mode .photo-column {
-            animation: none !important;
-        }
+        .gallery-mode .photo-column { animation: none !important; }
 
         .photo-column {
             display: flex;
@@ -91,7 +89,6 @@
             overflow-y: auto;
             flex-grow: 1;
             padding-right: 5px;
-            margin-bottom: 15px;
         }
 
         .scroll-area::-webkit-scrollbar { width: 5px; }
@@ -130,12 +127,11 @@
             margin-bottom: 20px;
         }
 
-        /* DAILY MESSAGES STYLING */
+        /* DAILY LOG STYLING */
         #daily-log-section {
             margin-top: 20px;
             padding-top: 15px;
             border-top: 2px dashed var(--soft-bg);
-            /* CHANGED: Removed display:none, visible immediately */
         }
 
         .log-input {
@@ -146,17 +142,39 @@
             font-family: inherit;
             margin-bottom: 10px;
             box-sizing: border-box;
-            background: white;
+        }
+
+        /* FULL HISTORY OVERLAY */
+        #historyOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--soft-bg);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .history-content {
+            width: 100%;
+            max-width: 500px;
+            margin-top: 60px;
         }
 
         .log-entry {
-            background: #fffafa;
-            border-left: 4px solid var(--primary-pink);
-            padding: 10px;
-            margin-bottom: 10px;
+            background: white;
+            border-left: 5px solid var(--primary-pink);
+            padding: 15px;
+            margin-bottom: 15px;
             text-align: left;
-            font-size: 0.85rem;
-            border-radius: 0 10px 10px 0;
+            border-radius: 0 15px 15px 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             word-wrap: break-word;
         }
 
@@ -164,16 +182,15 @@
             font-weight: bold;
             color: var(--dark-pink);
             display: block;
-            font-size: 0.75rem;
-            margin-bottom: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
         }
 
         .controls { 
             display: flex; 
             flex-direction: column; 
             gap: 10px; 
-            background: white;
-            padding-top: 10px;
+            padding-top: 15px;
         }
 
         .btn {
@@ -185,19 +202,19 @@
             font-size: 16px;
             cursor: pointer;
             font-weight: bold;
+            transition: 0.2s;
         }
 
-        .btn-small { padding: 8px 15px; font-size: 14px; margin-bottom: 15px; }
+        .btn:hover { transform: scale(1.02); }
+        .btn-history { background: #9b59b6; } /* Purple for history */
+        .btn-small { padding: 8px 15px; font-size: 14px; margin-top: 5px; }
         .btn-flower { background: #ffa07a; }
         .btn-gallery { background: #6495ED; display: none; } 
 
-        #closeGallery {
+        .close-btn {
             position: fixed;
             top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: none;
-            z-index: 100;
+            z-index: 110;
         }
 
         .heart, .flower {
@@ -217,7 +234,8 @@
 </head>
 <body onload="loadSavedMessages()">
 
-    <button id="closeGallery" class="btn" onclick="toggleGallery()">Back to Letter ↩️</button>
+    <button id="closeGallery" class="btn close-btn" style="display:none; left: 50%; transform: translateX(-50%);" onclick="toggleGallery()">Back to Letter ↩️</button>
+    <button id="closeHistory" class="btn close-btn" style="display:none; left: 50%; transform: translateX(-50%);" onclick="toggleHistory()">Close History ↩️</button>
 
     <div class="photo-bg" id="photoWall">
         <div class="photo-column">
@@ -231,8 +249,6 @@
             <img src="2371fab0-bd36-4946-97bb-d52336347719.jpeg">
             <img src="IMG_5509.jpeg">
             <img src="IMG_5500.jpeg">
-            <img src="IMG_5480.jpeg">
-            <img src="IMG_5471.jpeg">
         </div>
         <div class="photo-column" style="animation-duration: 75s; animation-direction: reverse;">
             <img src="IMG_5365.jpeg">
@@ -245,8 +261,12 @@
             <img src="IMG_5365.jpeg">
             <img src="IMG_5347.jpeg">
             <img src="IMG_5338.jpeg">
-            <img src="IMG_5337.jpeg">
         </div>
+    </div>
+
+    <div id="historyOverlay">
+        <h2 style="color: var(--dark-pink); margin-top: 20px;">Our Message History</h2>
+        <div class="history-content" id="fullLogDisplay"></div>
     </div>
 
     <audio id="bgMusic">
@@ -264,10 +284,10 @@
             </div>
 
             <div id="daily-log-section">
-                <h3 style="color: var(--dark-pink); font-size: 1rem;">Daily Messages for You</h3>
-                <textarea id="messageInput" class="log-input" placeholder="Write something today, Muhaimin..." rows="3"></textarea>
+                <h3 style="color: var(--dark-pink); font-size: 1rem;">Daily Message for Today</h3>
+                <textarea id="messageInput" class="log-input" placeholder="Say something sweet..." rows="3"></textarea>
                 <button class="btn btn-small" onclick="saveMessage()">Save Message ✍️</button>
-                <div id="logDisplay"></div>
+                <button class="btn btn-small btn-history" onclick="toggleHistory()">View All History 📖</button>
             </div>
         </div>
 
@@ -310,7 +330,6 @@
         function typeWriter() {
             const scrollArea = document.getElementById('scrollContainer');
             const letterDiv = document.getElementById('letter-text');
-            
             if (index < fullMessage.length) {
                 let char = fullMessage.charAt(index);
                 if (char === "<") {
@@ -320,7 +339,6 @@
                     letterDiv.innerHTML += char;
                     index++;
                 }
-                // Only auto-scroll while typewriter is active
                 scrollArea.scrollTop = letterDiv.offsetTop + letterDiv.offsetHeight - 50;
                 setTimeout(typeWriter, 20); 
             } else {
@@ -333,47 +351,52 @@
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
             if (message === "") return;
-
             const now = new Date();
             const timestamp = now.toLocaleDateString() + " at " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
-            const newMessage = {
-                date: timestamp,
-                text: message
-            };
-
             let messages = JSON.parse(localStorage.getItem('sayangMessages')) || [];
-            messages.unshift(newMessage);
+            messages.unshift({date: timestamp, text: message});
             localStorage.setItem('sayangMessages', JSON.stringify(messages));
-            
             input.value = "";
-            loadSavedMessages();
+            alert("Message saved to history!");
         }
 
         function loadSavedMessages() {
-            const display = document.getElementById('logDisplay');
+            const display = document.getElementById('fullLogDisplay');
             const messages = JSON.parse(localStorage.getItem('sayangMessages')) || [];
-            
-            display.innerHTML = messages.map(msg => `
-                <div class="log-entry">
-                    <span class="log-date">${msg.date}</span>
-                    ${msg.text}
-                </div>
-            `).join('');
+            if(messages.length === 0) {
+                display.innerHTML = "<p style='text-align:center'>No messages yet. Write one today!</p>";
+            } else {
+                display.innerHTML = messages.map(msg => `
+                    <div class="log-entry">
+                        <span class="log-date">${msg.date}</span>
+                        ${msg.text}
+                    </div>
+                `).join('');
+            }
+        }
+
+        function toggleHistory() {
+            const overlay = document.getElementById('historyOverlay');
+            const closeBtn = document.getElementById('closeHistory');
+            if (overlay.style.display === 'none' || overlay.style.display === '') {
+                loadSavedMessages();
+                overlay.style.display = 'flex';
+                closeBtn.style.display = 'block';
+            } else {
+                overlay.style.display = 'none';
+                closeBtn.style.display = 'none';
+            }
         }
 
         function toggleGallery() {
             const body = document.body;
             const container = document.getElementById('mainContainer');
             const closeBtn = document.getElementById('closeGallery');
-            const photoWall = document.getElementById('photoWall');
-            
             if (!body.classList.contains('gallery-mode')) {
                 body.classList.add('gallery-mode');
                 container.style.opacity = '0';
                 container.style.pointerEvents = 'none';
                 closeBtn.style.display = 'block';
-                photoWall.scrollTop = 0;
             } else {
                 body.classList.remove('gallery-mode');
                 container.style.opacity = '1';
