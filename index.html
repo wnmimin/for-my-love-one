@@ -33,11 +33,8 @@
         }
 
         .gallery-mode .photo-bg {
-            opacity: 1 !important;
-            z-index: 20; 
-            overflow-y: auto; 
-            background: var(--soft-bg);
-            padding-top: 80px; 
+            opacity: 1 !important; z-index: 20; 
+            overflow-y: auto; background: var(--soft-bg); padding-top: 80px; 
         }
 
         .gallery-mode .photo-column { animation: none !important; }
@@ -86,23 +83,15 @@
             padding: 6px 18px; border-radius: 50px; display: inline-block; margin-bottom: 15px;
         }
 
-        /* MESSAGE PREVIEW CARD */
+        /* PREVIEW CARD */
         .latest-preview-card {
-            background: #fff0f5;
-            border: 2px dashed var(--primary-pink);
-            border-radius: 15px;
-            padding: 15px;
-            margin: 15px 0;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            position: relative;
-            text-align: left;
+            background: #fff0f5; border: 2px dashed var(--primary-pink);
+            border-radius: 15px; padding: 15px; margin: 15px 0;
+            cursor: pointer; transition: transform 0.3s ease;
+            position: relative; text-align: left;
         }
 
-        .latest-preview-card:hover {
-            transform: translateY(-3px) scale(1.02);
-            background: #ffe4e1;
-        }
+        .latest-preview-card:hover { transform: translateY(-3px) scale(1.02); }
 
         .preview-tag {
             font-size: 0.7rem; background: var(--dark-pink); color: white;
@@ -132,12 +121,11 @@
 
         .log-date { font-weight: bold; color: var(--dark-pink); display: block; font-size: 0.7rem; margin-bottom: 5px; }
 
-        /* BUTTONS & INPUT */
+        /* BUTTONS */
         .log-input {
             width: 100%; padding: 12px; border-radius: 15px;
             border: 2px solid var(--soft-bg); font-family: inherit;
             margin-bottom: 10px; box-sizing: border-box; font-size: 0.9rem;
-            resize: none;
         }
 
         .btn {
@@ -148,18 +136,17 @@
 
         .btn-small { padding: 8px 15px; font-size: 14px; width: 100%; margin-bottom: 10px; }
         .btn-gallery { background: #6495ED; width: 100%; }
+        .btn-flower { background: #ffa07a; width: 100%; }
         
         .close-btn { position: fixed; top: 20px; z-index: 110; left: 50%; transform: translateX(-50%); }
 
-        .heart {
-            position: fixed; pointer-events: none; z-index: 999;
-            opacity: 0.8; animation: floatUp 4s ease-out forwards;
-        }
+        /* ANIMATIONS */
+        .heart, .flower { position: fixed; pointer-events: none; z-index: 999; opacity: 0.8; animation: floatUp 4s ease-out forwards; }
 
         @keyframes floatUp {
             0% { transform: translateY(100vh) scale(0); opacity: 0; }
             10% { opacity: 0.8; }
-            100% { transform: translateY(-15vh) scale(1.5); opacity: 0; }
+            100% { transform: translateY(-15vh) translateX(var(--drift, 0px)) scale(1.5) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
@@ -203,7 +190,7 @@
                 <div class="latest-preview-card" onclick="toggleHistory()">
                     <span class="preview-tag">Latest Love Note ✨</span>
                     <div id="previewText">Loading...</div>
-                    <div style="text-align: right; font-size: 0.7rem; color: var(--primary-pink); margin-top: 5px; font-weight: bold;">Tap for all messages →</div>
+                    <div style="text-align: right; font-size: 0.7rem; color: var(--primary-pink); margin-top: 5px; font-weight: bold;">Tap for history →</div>
                 </div>
                 <textarea id="messageInput" class="log-input" placeholder="Type a message for her..." rows="2"></textarea>
                 <button id="postBtn" class="btn btn-small" onclick="saveToCloud()">Post to Website 🌍</button>
@@ -213,40 +200,35 @@
         <div class="controls" style="margin-top:15px; display:flex; flex-direction:column; gap:10px;">
             <button class="btn" id="readBtn" onclick="startLetter()">Read My Letter</button>
             <button class="btn btn-gallery" onclick="toggleGallery()">View Our Gallery 🖼️</button>
+            <button class="btn btn-flower" onclick="spawnFlowers()">Send Her Flowers 🌸</button>
         </div>
     </div>
 
     <script>
-        // --- DATABASE CONFIG ---
         const SUPABASE_URL = 'https://suegbgtnzzzdlkmnuhff.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1ZWdiZ3Ruenp6ZGxrbW51aGZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc1NjM3NzMsImV4cCI6MjA4MzEzOTc3M30.Mg-YIqVXrsl8Sp6T4XJ-X_Lxjz1yGaAEIwhMlC4WK0k';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const fullMessage = `Assalamualaikum sayang. This is me muhaimin, im sorry i have always hurt your feelings, everything you've said is true, its not that you keep wanting for more but instead, im not showing enough for you. <br><br>Sayang, please give me a chance to make everything right again, please also remember of our time together during highschool, we would eat together walk together sleep together. I hope we can do that again but because of our ldr status, i hope we can always call so we can spend time together much more. <br><br>I promise you that i will manage my time much better. I know that all the time i wasted on playing games instead of talking to you is something that i shouldn't have done, and i know you would have said its fine since i like gaming, but i think, in order to spend my time on something meaningful, i need to work on managing my time much better and start spending more with you. <br><br>Please know that i never feel burden by your request and im willing to do everything for you. I love you sayang💗`;
 
-        let index = 0;
-        let isTyping = false;
+        let index = 0; let isTyping = false;
 
-        // Load Teaser Message
         async function loadPreview() {
             const previewEl = document.getElementById('previewText');
             const { data, error } = await supabaseClient.from('messages').select('text').order('created_at', { ascending: false }).limit(1);
-            if (!error && data && data.length > 0) { previewEl.innerText = `"${data[0].text}"`; }
-            else { previewEl.innerText = "No messages yet. Post one!"; }
+            if (!error && data && data.length > 0) previewEl.innerText = `"${data[0].text}"`;
         }
 
-        // Save Message
         async function saveToCloud() {
             const input = document.getElementById('messageInput');
             const btn = document.getElementById('postBtn');
             if (!input.value.trim()) return;
             btn.disabled = true;
             const { error } = await supabaseClient.from('messages').insert([{ text: input.value.trim() }]);
-            if (!error) { input.value = ""; loadPreview(); alert("Posted! Everyone can see it now."); }
+            if (!error) { input.value = ""; loadPreview(); alert("Message posted! ❤️"); }
             btn.disabled = false;
         }
 
-        // Load Full History
         async function loadFromCloud() {
             const display = document.getElementById('fullLogDisplay');
             display.innerHTML = "<p>Loading memories...</p>";
@@ -261,7 +243,6 @@
             }
         }
 
-        // Navigation
         function toggleHistory() {
             const div = document.getElementById('historyOverlay');
             const btn = document.getElementById('closeHistory');
@@ -273,31 +254,24 @@
 
         function toggleGallery() {
             const body = document.body;
-            const container = document.getElementById('mainContainer');
             const closeBtn = document.getElementById('closeGallery');
+            const container = document.getElementById('mainContainer');
             if (!body.classList.contains('gallery-mode')) {
                 body.classList.add('gallery-mode');
-                container.style.opacity = '0';
-                container.style.pointerEvents = 'none';
+                container.style.opacity = '0'; container.style.pointerEvents = 'none';
                 closeBtn.style.display = 'block';
             } else {
                 body.classList.remove('gallery-mode');
-                container.style.opacity = '1';
-                container.style.pointerEvents = 'auto';
+                container.style.opacity = '1'; container.style.pointerEvents = 'auto';
                 closeBtn.style.display = 'none';
             }
         }
 
-        // Letter & Music Trigger
         function startLetter() {
             if(isTyping) return;
             isTyping = true;
-            
-            // Start Music
             const music = document.getElementById('bgMusic');
-            music.volume = 0.5;
-            music.play().catch(e => console.log("Music blocked by browser."));
-
+            music.volume = 0.5; music.play().catch(e => console.log("Music blocked"));
             document.getElementById('readBtn').style.display = 'none';
             document.getElementById('letter-text').innerHTML = "";
             typeWriter();
@@ -308,11 +282,8 @@
             const letterDiv = document.getElementById('letter-text');
             const scrollArea = document.getElementById('scrollContainer');
             if (index < fullMessage.length) {
-                if (fullMessage.charAt(index) === "<") {
-                    letterDiv.innerHTML += "<br><br>"; index += 8;
-                } else {
-                    letterDiv.innerHTML += fullMessage.charAt(index++);
-                }
+                if (fullMessage.charAt(index) === "<") { letterDiv.innerHTML += "<br><br>"; index += 8; } 
+                else { letterDiv.innerHTML += fullMessage.charAt(index++); }
                 scrollArea.scrollTop = letterDiv.scrollHeight;
                 setTimeout(typeWriter, 35);
             }
@@ -328,9 +299,21 @@
             const heart = document.createElement('div');
             heart.className = 'heart'; heart.innerHTML = '❤️';
             heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
             document.body.appendChild(heart);
             setTimeout(() => heart.remove(), 4000);
+        }
+
+        function spawnFlowers() {
+            for(let i=0; i<30; i++) {
+                setTimeout(() => {
+                    const f = document.createElement('div');
+                    f.className = 'flower'; f.innerHTML = '🌸';
+                    f.style.left = Math.random() * 100 + 'vw';
+                    f.style.setProperty('--drift', (Math.random()*100-50)+'px');
+                    document.body.appendChild(f);
+                    setTimeout(() => f.remove(), 4000);
+                }, i * 100);
+            }
         }
     </script>
 </body>
