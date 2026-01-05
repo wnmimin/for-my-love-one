@@ -32,7 +32,6 @@
             opacity: 0.8; transition: opacity 1s ease;
         }
 
-        /* Gallery Mode makes the background scrollable and opaque */
         .gallery-mode .photo-bg {
             opacity: 1 !important;
             z-index: 20; 
@@ -116,7 +115,7 @@
             overflow: hidden; margin-top: 5px;
         }
 
-        /* HISTORY OVERLAY */
+        /* OVERLAYS */
         #historyOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--soft-bg); z-index: 100; display: none;
@@ -133,7 +132,7 @@
 
         .log-date { font-weight: bold; color: var(--dark-pink); display: block; font-size: 0.7rem; margin-bottom: 5px; }
 
-        /* INPUTS & BUTTONS */
+        /* BUTTONS & INPUT */
         .log-input {
             width: 100%; padding: 12px; border-radius: 15px;
             border: 2px solid var(--soft-bg); font-family: inherit;
@@ -148,7 +147,7 @@
         }
 
         .btn-small { padding: 8px 15px; font-size: 14px; width: 100%; margin-bottom: 10px; }
-        .btn-gallery { background: #6495ED; display: none; } /* Blue for gallery */
+        .btn-gallery { background: #6495ED; width: 100%; }
         
         .close-btn { position: fixed; top: 20px; z-index: 110; left: 50%; transform: translateX(-50%); }
 
@@ -170,7 +169,7 @@
     <button id="closeGallery" class="btn close-btn" style="display:none;" onclick="toggleGallery()">Back to Letter ↩️</button>
 
     <div id="historyOverlay">
-        <h2 style="color: var(--dark-pink); margin-top: 70px;">Our Message History</h2>
+        <h2 style="color: var(--dark-pink); margin-top: 70px;">Our Shared Messages</h2>
         <div id="fullLogDisplay" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
     </div>
 
@@ -185,7 +184,7 @@
         </div>
     </div>
 
-    <audio id="bgMusic">
+    <audio id="bgMusic" loop>
         <source src="Mitski - My Love Mine All Mine.mp3" type="audio/mpeg">
     </audio>
 
@@ -201,26 +200,24 @@
 
             <div id="daily-log-section">
                 <h3 style="color: var(--dark-pink); font-size: 1rem; margin-bottom: 5px;">Daily Messages</h3>
-                
                 <div class="latest-preview-card" onclick="toggleHistory()">
                     <span class="preview-tag">Latest Love Note ✨</span>
-                    <div id="previewText">Loading the latest message...</div>
-                    <div style="text-align: right; font-size: 0.7rem; color: var(--primary-pink); margin-top: 5px; font-weight: bold;">Tap to see all history →</div>
+                    <div id="previewText">Loading...</div>
+                    <div style="text-align: right; font-size: 0.7rem; color: var(--primary-pink); margin-top: 5px; font-weight: bold;">Tap for all messages →</div>
                 </div>
-
-                <textarea id="messageInput" class="log-input" placeholder="Write a message for today..." rows="2"></textarea>
+                <textarea id="messageInput" class="log-input" placeholder="Type a message for her..." rows="2"></textarea>
                 <button id="postBtn" class="btn btn-small" onclick="saveToCloud()">Post to Website 🌍</button>
             </div>
         </div>
 
         <div class="controls" style="margin-top:15px; display:flex; flex-direction:column; gap:10px;">
             <button class="btn" id="readBtn" onclick="startLetter()">Read My Letter</button>
-            <button class="btn btn-gallery" id="galleryBtn" onclick="toggleGallery()">View Our Gallery 🖼️</button>
+            <button class="btn btn-gallery" onclick="toggleGallery()">View Our Gallery 🖼️</button>
         </div>
     </div>
 
     <script>
-        // SUPABASE CONNECTION
+        // --- DATABASE CONFIG ---
         const SUPABASE_URL = 'https://suegbgtnzzzdlkmnuhff.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1ZWdiZ3Ruenp6ZGxrbW51aGZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc1NjM3NzMsImV4cCI6MjA4MzEzOTc3M30.Mg-YIqVXrsl8Sp6T4XJ-X_Lxjz1yGaAEIwhMlC4WK0k';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -230,25 +227,29 @@
         let index = 0;
         let isTyping = false;
 
+        // Load Teaser Message
         async function loadPreview() {
             const previewEl = document.getElementById('previewText');
             const { data, error } = await supabaseClient.from('messages').select('text').order('created_at', { ascending: false }).limit(1);
             if (!error && data && data.length > 0) { previewEl.innerText = `"${data[0].text}"`; }
+            else { previewEl.innerText = "No messages yet. Post one!"; }
         }
 
+        // Save Message
         async function saveToCloud() {
             const input = document.getElementById('messageInput');
             const btn = document.getElementById('postBtn');
             if (!input.value.trim()) return;
             btn.disabled = true;
             const { error } = await supabaseClient.from('messages').insert([{ text: input.value.trim() }]);
-            if (!error) { input.value = ""; loadPreview(); alert("Message posted! ❤️"); }
+            if (!error) { input.value = ""; loadPreview(); alert("Posted! Everyone can see it now."); }
             btn.disabled = false;
         }
 
+        // Load Full History
         async function loadFromCloud() {
             const display = document.getElementById('fullLogDisplay');
-            display.innerHTML = "<p>Fetching our memories...</p>";
+            display.innerHTML = "<p>Loading memories...</p>";
             const { data, error } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: false });
             if (!error) {
                 display.innerHTML = data.map(msg => `
@@ -260,6 +261,7 @@
             }
         }
 
+        // Navigation
         function toggleHistory() {
             const div = document.getElementById('historyOverlay');
             const btn = document.getElementById('closeHistory');
@@ -286,10 +288,16 @@
             }
         }
 
+        // Letter & Music Trigger
         function startLetter() {
             if(isTyping) return;
             isTyping = true;
-            document.getElementById('bgMusic').play();
+            
+            // Start Music
+            const music = document.getElementById('bgMusic');
+            music.volume = 0.5;
+            music.play().catch(e => console.log("Music blocked by browser."));
+
             document.getElementById('readBtn').style.display = 'none';
             document.getElementById('letter-text').innerHTML = "";
             typeWriter();
@@ -306,9 +314,7 @@
                     letterDiv.innerHTML += fullMessage.charAt(index++);
                 }
                 scrollArea.scrollTop = letterDiv.scrollHeight;
-                setTimeout(typeWriter, 30);
-            } else {
-                document.getElementById('galleryBtn').style.display = 'block';
+                setTimeout(typeWriter, 35);
             }
         }
 
