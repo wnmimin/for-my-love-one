@@ -32,11 +32,6 @@
             opacity: 0.8; transition: opacity 1s ease;
         }
 
-        .gallery-mode .photo-bg {
-            opacity: 1 !important; z-index: 20; overflow-y: auto; 
-            background: var(--soft-bg); padding-top: 80px; 
-        }
-
         .photo-column {
             display: flex; flex-direction: column; gap: 25px;
             animation: scrollUp 60s linear infinite;
@@ -61,7 +56,6 @@
             z-index: 10; max-width: 450px; width: 85%;
             max-height: 85vh; display: flex; flex-direction: column;
             position: relative; backdrop-filter: blur(10px);
-            transition: opacity 0.5s ease;
         }
 
         .scroll-area { overflow-y: auto; flex-grow: 1; padding-right: 5px; }
@@ -81,20 +75,44 @@
             padding: 6px 18px; border-radius: 50px; display: inline-block; margin-bottom: 15px;
         }
 
-        #letter-text {
-            color: #222; line-height: 1.6; text-align: left;
-            font-size: 0.95rem; margin-bottom: 20px;
+        /* MESSAGE PREVIEW CARD */
+        .latest-preview-card {
+            background: #fff0f5;
+            border: 2px dashed var(--primary-pink);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            position: relative;
+            text-align: left;
         }
 
-        /* DAILY LOG STYLING */
-        #daily-log-section {
-            margin-top: 20px; padding-top: 15px; border-top: 2px dashed var(--soft-bg);
+        .latest-preview-card:hover {
+            transform: translateY(-3px) scale(1.02);
+            background: #ffe4e1;
         }
 
-        .log-input {
-            width: 100%; padding: 12px; border-radius: 15px;
-            border: 2px solid var(--soft-bg); font-family: inherit;
-            margin-bottom: 10px; box-sizing: border-box; font-size: 0.9rem;
+        .preview-tag {
+            font-size: 0.7rem;
+            background: var(--dark-pink);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            position: absolute;
+            top: -10px;
+            left: 15px;
+        }
+
+        #previewText {
+            font-size: 0.85rem;
+            color: #444;
+            font-style: italic;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-top: 5px;
         }
 
         /* HISTORY OVERLAY */
@@ -112,7 +130,15 @@
             width: 100%; max-width: 400px; word-wrap: break-word;
         }
 
-        .log-date { font-weight: bold; color: var(--dark-pink); display: block; font-size: 0.8rem; margin-bottom: 5px; }
+        .log-date { font-weight: bold; color: var(--dark-pink); display: block; font-size: 0.7rem; margin-bottom: 5px; }
+
+        /* INPUTS & BUTTONS */
+        .log-input {
+            width: 100%; padding: 12px; border-radius: 15px;
+            border: 2px solid var(--soft-bg); font-family: inherit;
+            margin-bottom: 10px; box-sizing: border-box; font-size: 0.9rem;
+            resize: none;
+        }
 
         .btn {
             background: var(--primary-pink); color: white; border: none;
@@ -120,53 +146,40 @@
             cursor: pointer; font-weight: bold; transition: 0.2s;
         }
 
-        .btn-history { background: #9b59b6; margin-top: 5px; }
-        .btn-small { padding: 8px 15px; font-size: 14px; }
-        .btn-flower { background: #ffa07a; }
-        .btn-gallery { background: #6495ED; display: none; } 
-
+        .btn-small { padding: 8px 15px; font-size: 14px; width: 100%; margin-bottom: 10px; }
+        
         .close-btn { position: fixed; top: 20px; z-index: 110; left: 50%; transform: translateX(-50%); }
 
-        .heart, .flower { position: fixed; pointer-events: none; z-index: 999; opacity: 0.8; animation: floatUp 4s ease-out forwards; }
+        .heart {
+            position: fixed; pointer-events: none; z-index: 999;
+            opacity: 0.8; animation: floatUp 4s ease-out forwards;
+        }
 
         @keyframes floatUp {
-            0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
             10% { opacity: 0.8; }
-            100% { transform: translateY(-15vh) translateX(var(--drift, 20px)) scale(1.5) rotate(360deg); opacity: 0; }
+            100% { transform: translateY(-15vh) scale(1.5); opacity: 0; }
         }
     </style>
 </head>
-<body onload="updateCounter()">
+<body onload="updateCounter(); loadPreview();">
 
-    <button id="closeGallery" class="btn close-btn" style="display:none;" onclick="toggleGallery()">Back to Letter ↩️</button>
-    <button id="closeHistory" class="btn close-btn" style="display:none;" onclick="toggleHistory()">Close History ↩️</button>
-
-    <div class="photo-bg" id="photoWall">
-        <div class="photo-column">
-            <img src="2371fab0-bd36-4946-97bb-d52336347719.jpeg">
-            <img src="IMG_5509.jpeg">
-            <img src="IMG_5500.jpeg">
-            <img src="IMG_5480.jpeg">
-            <img src="IMG_5471.jpeg">
-            <img src="IMG_5390.jpeg">
-            <img src="2371fab0-bd36-4946-97bb-d52336347719.jpeg">
-            <img src="IMG_5509.jpeg">
-        </div>
-        <div class="photo-column" style="animation-direction: reverse;">
-            <img src="IMG_5365.jpeg">
-            <img src="IMG_5347.jpeg">
-            <img src="IMG_5338.jpeg">
-            <img src="IMG_5337.jpeg">
-            <img src="IMG_5319.jpeg">
-            <img src="IMG_5313.jpeg">
-            <img src="IMG_5365.jpeg">
-            <img src="IMG_5347.jpeg">
-        </div>
-    </div>
+    <button id="closeHistory" class="btn close-btn" style="display:none;" onclick="toggleHistory()">Back to Letter ↩️</button>
 
     <div id="historyOverlay">
         <h2 style="color: var(--dark-pink); margin-top: 70px;">Our Message History</h2>
         <div id="fullLogDisplay" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
+    </div>
+
+    <div class="photo-bg">
+        <div class="photo-column">
+            <img src="IMG_5509.jpeg"><img src="IMG_5500.jpeg"><img src="IMG_5480.jpeg"><img src="IMG_5471.jpeg">
+            <img src="IMG_5509.jpeg"><img src="IMG_5500.jpeg"><img src="IMG_5480.jpeg"><img src="IMG_5471.jpeg">
+        </div>
+        <div class="photo-column" style="animation-direction: reverse; animation-duration: 70s;">
+            <img src="IMG_5365.jpeg"><img src="IMG_5347.jpeg"><img src="IMG_5338.jpeg"><img src="IMG_5337.jpeg">
+            <img src="IMG_5365.jpeg"><img src="IMG_5347.jpeg"><img src="IMG_5338.jpeg"><img src="IMG_5337.jpeg">
+        </div>
     </div>
 
     <audio id="bgMusic">
@@ -179,34 +192,58 @@
         <div class="days-counter" id="timer">Counting...</div>
         
         <div class="scroll-area" id="scrollContainer">
-            <div id="letter-text">
+            <div id="letter-text" style="text-align: left; font-size: 0.95rem; line-height: 1.6; color: #222;">
                 <p style="text-align: center;">I have something I want to tell you, sayang...</p>
             </div>
 
             <div id="daily-log-section">
-                <h3 style="color: var(--dark-pink); font-size: 1rem;">Daily Message</h3>
-                <textarea id="messageInput" class="log-input" placeholder="Say something sweet today..." rows="3"></textarea>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <button id="postBtn" class="btn btn-small" onclick="saveToCloud()">Post Message 🌍</button>
-                    <button class="btn btn-small btn-history" onclick="toggleHistory()">View All History 📖</button>
+                <h3 style="color: var(--dark-pink); font-size: 1rem; margin-bottom: 5px;">Daily Messages</h3>
+                
+                <div class="latest-preview-card" onclick="toggleHistory()">
+                    <span class="preview-tag">Latest Love Note ✨</span>
+                    <div id="previewText">Loading the latest message...</div>
+                    <div style="text-align: right; font-size: 0.7rem; color: var(--primary-pink); margin-top: 5px; font-weight: bold;">Tap to see all history →</div>
                 </div>
+
+                <textarea id="messageInput" class="log-input" placeholder="Write a message for today..." rows="2"></textarea>
+                <button id="postBtn" class="btn btn-small" onclick="saveToCloud()">Post to Website 🌍</button>
             </div>
         </div>
 
-        <div class="controls" style="margin-top:15px; display:flex; flex-direction:column; gap:10px;">
+        <div class="controls" style="margin-top:15px;">
             <button class="btn" id="readBtn" onclick="startLetter()">Read My Letter</button>
-            <button class="btn btn-flower" onclick="spawnFlowers()">Send Her Flowers 🌸</button>
-            <button class="btn btn-gallery" id="galleryBtn" onclick="toggleGallery()">View Gallery 🖼️</button>
         </div>
     </div>
 
     <script>
-        // --- SUPABASE CONFIG ---
+        // SUPABASE CONNECTION
         const SUPABASE_URL = 'https://suegbgtnzzzdlkmnuhff.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1ZWdiZ3Ruenp6ZGxrbW51aGZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc1NjM3NzMsImV4cCI6MjA4MzEzOTc3M30.Mg-YIqVXrsl8Sp6T4XJ-X_Lxjz1yGaAEIwhMlC4WK0k';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- CLOUD FUNCTIONS ---
+        // LETTER CONTENT
+        const fullMessage = `Assalamualaikum sayang. This is me muhaimin, im sorry i have always hurt your feelings, everything you've said is true, its not that you keep wanting for more but instead, im not showing enough for you. <br><br>Sayang, please give me a chance to make everything right again, please also remember of our time together during highschool, we would eat together walk together sleep together. I hope we can do that again but because of our ldr status, i hope we can always call so we can spend time together much more. <br><br>I promise you that i will manage my time much better. I know that all the time i wasted on playing games instead of talking to you is something that i shouldn't have done, and i know you would have said its fine since i like gaming, but i think, in order to spend my time on something meaningful, i need to work on managing my time much better and start spending more with you. <br><br>Please know that i never feel burden by your request and im willing to do everything for you. I love you sayang💗`;
+
+        let index = 0;
+        let isTyping = false;
+
+        // LOAD LATEST MESSAGE FOR PREVIEW
+        async function loadPreview() {
+            const previewEl = document.getElementById('previewText');
+            const { data, error } = await supabaseClient
+                .from('messages')
+                .select('text')
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            if (!error && data && data.length > 0) {
+                previewEl.innerText = `"${data[0].text}"`;
+            } else {
+                previewEl.innerText = "No messages yet. Write your first note!";
+            }
+        }
+
+        // SAVE TO SUPABASE
         async function saveToCloud() {
             const input = document.getElementById('messageInput');
             const btn = document.getElementById('postBtn');
@@ -216,65 +253,50 @@
             btn.disabled = true; btn.innerText = "Posting...";
             const { error } = await supabaseClient.from('messages').insert([{ text: text }]);
             
-            if (error) { alert("Error saving: " + error.message); } 
-            else { input.value = ""; alert("Message published!"); }
-            btn.disabled = false; btn.innerText = "Post Message 🌍";
+            if (error) {
+                alert("Error: " + error.message);
+            } else {
+                input.value = "";
+                loadPreview();
+                alert("Message posted to the cloud! ❤️");
+            }
+            btn.disabled = false; btn.innerText = "Post to Website 🌍";
         }
 
+        // LOAD ALL MESSAGES
         async function loadFromCloud() {
             const display = document.getElementById('fullLogDisplay');
-            display.innerHTML = "Loading shared messages...";
-            const { data, error } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: false });
+            display.innerHTML = "<p>Fetching our memories...</p>";
+            const { data, error } = await supabaseClient
+                .from('messages')
+                .select('*')
+                .order('created_at', { ascending: false });
             
-            if (error) { display.innerHTML = "Error loading messages."; } 
-            else {
+            if (!error) {
                 display.innerHTML = data.map(msg => `
                     <div class="log-entry">
                         <span class="log-date">${new Date(msg.created_at).toLocaleString()}</span>
                         ${msg.text}
                     </div>
-                `).join('') || "No messages yet.";
+                `).join('');
             }
         }
 
-        // --- UI TOGGLES ---
+        // TOGGLE HISTORY VIEW
         function toggleHistory() {
             const div = document.getElementById('historyOverlay');
             const btn = document.getElementById('closeHistory');
-            const isShowing = div.style.display === 'none' || div.style.display === '';
-            div.style.display = isShowing ? 'flex' : 'none';
-            btn.style.display = isShowing ? 'block' : 'none';
-            if(isShowing) loadFromCloud();
+            const isShowing = div.style.display === 'flex';
+            div.style.display = isShowing ? 'none' : 'flex';
+            btn.style.display = isShowing ? 'none' : 'block';
+            if(!isShowing) loadFromCloud();
         }
 
-        function toggleGallery() {
-            const body = document.body;
-            const container = document.getElementById('mainContainer');
-            const btn = document.getElementById('closeGallery');
-            body.classList.toggle('gallery-mode');
-            const isGallery = body.classList.contains('gallery-mode');
-            container.style.opacity = isGallery ? '0' : '1';
-            btn.style.display = isGallery ? 'block' : 'none';
-        }
-
-        // --- TIMER & LETTER ---
-        const startDate = new Date(2024, 2, 28);
-        function updateCounter() {
-            const now = new Date();
-            const days = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
-            document.getElementById('timer').innerHTML = days + " Days Together";
-        }
-
-        const fullMessage = `Assalamualaikum sayang. This is me muhaimin, im sorry i have always hurt your feelings, everything you've said is true, its not that you keep wanting for more but instead, im not showing enough for you. <br><br>Sayang, please give me a chance to make everything right again, please also remember of our time together during highschool, we would eat together walk together sleep together. I hope we can do that again but because of our ldr status, i hope we can always call so we can spend time together much more. <br><br>I promise you that i will manage my time much better. I know that all the time i wasted on playing games instead of talking to you is something that i shouldn't have done, and i know you would have said its fine since i like gaming, but i think, in order to spend my time on something meaningful, i need to work on managing my time much better and start spending more with you. <br><br>Please know that i never feel burden by your request and im willing to do everything for you. I love you sayang💗`;
-        
-        let index = 0;
-        let isTyping = false;
+        // TYPEWRITER LOGIC
         function startLetter() {
             if(isTyping) return;
             isTyping = true;
-            const music = document.getElementById('bgMusic');
-            music.currentTime = 25;
-            music.play().catch(() => console.log("Music blocked"));
+            document.getElementById('bgMusic').play();
             document.getElementById('readBtn').style.display = 'none';
             document.getElementById('letter-text').innerHTML = "";
             typeWriter();
@@ -293,14 +315,17 @@
                     index++;
                 }
                 scrollArea.scrollTop = letterDiv.scrollHeight;
-                setTimeout(typeWriter, 20);
-            } else {
-                document.getElementById('galleryBtn').style.display = 'block';
-                isTyping = false;
+                setTimeout(typeWriter, 30);
             }
         }
 
-        // --- DECORATIONS ---
+        // DAYS COUNTER
+        function updateCounter() {
+            const startDate = new Date(2024, 2, 28);
+            const diff = Math.floor((new Date() - startDate) / (1000 * 60 * 60 * 24));
+            document.getElementById('timer').innerHTML = diff + " Days Together";
+        }
+
         function createHeart() {
             const heart = document.createElement('div');
             heart.className = 'heart'; heart.innerHTML = '❤️';
@@ -308,20 +333,6 @@
             heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
             document.body.appendChild(heart);
             setTimeout(() => heart.remove(), 4000);
-        }
-
-        function spawnFlowers() {
-            for(let i=0; i<50; i++) {
-                setTimeout(() => {
-                    const f = document.createElement('div');
-                    f.className = 'flower';
-                    f.innerHTML = ['🌸', '🌹', '🌷', '✨', '💖'][Math.floor(Math.random()*5)];
-                    f.style.left = Math.random() * 100 + 'vw';
-                    f.style.setProperty('--drift', (Math.random()*60-30)+'px');
-                    document.body.appendChild(f);
-                    setTimeout(() => f.remove(), 4000);
-                }, i * 40);
-            }
         }
     </script>
 </body>
