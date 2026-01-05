@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For My Sayang Insyirah</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary-pink: #ff69b4;
@@ -26,40 +27,24 @@
         /* PHOTO SCROLLING BACKGROUND */
         .photo-bg {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            display: flex;
-            justify-content: space-around;
-            opacity: 0.8; 
-            transition: opacity 1s ease;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; display: flex; justify-content: space-around;
+            opacity: 0.8; transition: opacity 1s ease;
         }
 
         .gallery-mode .photo-bg {
-            opacity: 1 !important;
-            z-index: 20; 
-            overflow-y: auto; 
-            background: var(--soft-bg);
-            padding-top: 80px; 
+            opacity: 1 !important; z-index: 20; overflow-y: auto; 
+            background: var(--soft-bg); padding-top: 80px; 
         }
 
-        .gallery-mode .photo-column { animation: none !important; }
-
         .photo-column {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
+            display: flex; flex-direction: column; gap: 25px;
             animation: scrollUp 60s linear infinite;
         }
 
         .photo-bg img {
-            width: 250px; 
-            height: 350px;
-            object-fit: cover;
-            border-radius: 20px;
-            border: 6px solid white;
+            width: 250px; height: 350px; object-fit: cover;
+            border-radius: 20px; border: 6px solid white;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
 
@@ -71,146 +56,68 @@
         /* MAIN CONTAINER */
         .container {
             text-align: center;
-            background: var(--glass); 
-            padding: 25px;
-            border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(208, 32, 94, 0.3);
-            z-index: 10;
-            max-width: 450px;
-            width: 85%;
-            max-height: 85vh; 
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            backdrop-filter: blur(10px);
+            background: var(--glass); padding: 25px;
+            border-radius: 30px; box-shadow: 0 20px 50px rgba(208, 32, 94, 0.3);
+            z-index: 10; max-width: 450px; width: 85%;
+            max-height: 85vh; display: flex; flex-direction: column;
+            position: relative; backdrop-filter: blur(10px);
             transition: opacity 0.5s ease;
         }
 
-        .scroll-area {
-            overflow-y: auto;
-            flex-grow: 1;
-            padding-right: 5px;
-        }
-
+        .scroll-area { overflow-y: auto; flex-grow: 1; padding-right: 5px; }
         .scroll-area::-webkit-scrollbar { width: 5px; }
-        .scroll-area::-webkit-scrollbar-thumb {
-            background: var(--primary-pink);
-            border-radius: 10px;
-        }
+        .scroll-area::-webkit-scrollbar-thumb { background: var(--primary-pink); border-radius: 10px; }
 
         .profile-img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 6px solid white;
-            outline: 2px solid var(--primary-pink);
-            margin: 0 auto 15px;
+            width: 140px; height: 140px; border-radius: 50%;
+            object-fit: cover; border: 6px solid white;
+            outline: 2px solid var(--primary-pink); margin: 0 auto 15px;
         }
 
-        h1 { color: var(--dark-pink); margin: 5px 0; font-size: 1.6rem; }
+        h1 { color: var(--dark-pink); margin: 5px 0; font-size: 1.5rem; }
         
         .days-counter {
-            font-size: 1rem;
-            color: white;
-            background: var(--primary-pink);
-            padding: 6px 18px;
-            border-radius: 50px;
-            display: inline-block;
-            margin-bottom: 15px;
+            font-size: 0.9rem; color: white; background: var(--primary-pink);
+            padding: 6px 18px; border-radius: 50px; display: inline-block; margin-bottom: 15px;
+        }
+
+        #letter-text {
+            color: #222; line-height: 1.6; text-align: left;
+            font-size: 0.95rem; margin-bottom: 20px;
         }
 
         /* DAILY LOG STYLING */
         #daily-log-section {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 2px dashed var(--soft-bg);
+            margin-top: 20px; padding-top: 15px; border-top: 2px dashed var(--soft-bg);
         }
 
         .log-input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 15px;
-            border: 2px solid var(--soft-bg);
-            font-family: inherit;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-            font-size: 0.9rem;
+            width: 100%; padding: 12px; border-radius: 15px;
+            border: 2px solid var(--soft-bg); font-family: inherit;
+            margin-bottom: 10px; box-sizing: border-box; font-size: 0.9rem;
         }
 
-        /* PREVIEW STYLING */
-        .preview-box {
-            background: #fff0f5;
-            border: 1px solid #ffb6c1;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            font-size: 0.85rem;
-            text-align: left;
-            color: #555;
-            min-height: 20px;
-        }
-
-        .preview-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: var(--primary-pink);
-            font-weight: bold;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        /* FULL HISTORY OVERLAY */
+        /* HISTORY OVERLAY */
         #historyOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--soft-bg);
-            z-index: 100;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-
-        .history-content {
-            width: 100%;
-            max-width: 500px;
-            margin-top: 60px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--soft-bg); z-index: 100; display: none;
+            flex-direction: column; align-items: center; padding: 20px;
+            box-sizing: border-box; overflow-y: auto;
         }
 
         .log-entry {
-            background: white;
-            border-left: 5px solid var(--primary-pink);
-            padding: 15px;
-            margin-bottom: 15px;
-            text-align: left;
-            border-radius: 0 15px 15px 0;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            word-wrap: break-word;
+            background: white; border-left: 5px solid var(--primary-pink);
+            padding: 15px; margin-bottom: 15px; text-align: left;
+            border-radius: 0 15px 15px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            width: 100%; max-width: 400px; word-wrap: break-word;
         }
 
-        .log-date {
-            font-weight: bold;
-            color: var(--dark-pink);
-            display: block;
-            font-size: 0.8rem;
-            margin-bottom: 5px;
-        }
+        .log-date { font-weight: bold; color: var(--dark-pink); display: block; font-size: 0.8rem; margin-bottom: 5px; }
 
         .btn {
-            background: var(--primary-pink);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 50px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
+            background: var(--primary-pink); color: white; border: none;
+            padding: 12px 25px; border-radius: 50px; font-size: 16px;
+            cursor: pointer; font-weight: bold; transition: 0.2s;
         }
 
         .btn-history { background: #9b59b6; margin-top: 5px; }
@@ -218,15 +125,9 @@
         .btn-flower { background: #ffa07a; }
         .btn-gallery { background: #6495ED; display: none; } 
 
-        .close-btn { position: fixed; top: 20px; z-index: 110; }
+        .close-btn { position: fixed; top: 20px; z-index: 110; left: 50%; transform: translateX(-50%); }
 
-        .heart, .flower {
-            position: fixed;
-            pointer-events: none;
-            z-index: 999; 
-            opacity: 0.8; 
-            animation: floatUp 4s ease-out forwards;
-        }
+        .heart, .flower { position: fixed; pointer-events: none; z-index: 999; opacity: 0.8; animation: floatUp 4s ease-out forwards; }
 
         @keyframes floatUp {
             0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
@@ -235,10 +136,10 @@
         }
     </style>
 </head>
-<body onload="updateCounter(); loadSavedMessages();">
+<body onload="updateCounter()">
 
-    <button id="closeGallery" class="btn close-btn" style="display:none; left: 50%; transform: translateX(-50%);" onclick="toggleGallery()">Back to Letter ↩️</button>
-    <button id="closeHistory" class="btn close-btn" style="display:none; left: 50%; transform: translateX(-50%);" onclick="toggleHistory()">Close History ↩️</button>
+    <button id="closeGallery" class="btn close-btn" style="display:none;" onclick="toggleGallery()">Back to Letter ↩️</button>
+    <button id="closeHistory" class="btn close-btn" style="display:none;" onclick="toggleHistory()">Close History ↩️</button>
 
     <div class="photo-bg" id="photoWall">
         <div class="photo-column">
@@ -248,28 +149,24 @@
             <img src="IMG_5480.jpeg">
             <img src="IMG_5471.jpeg">
             <img src="IMG_5390.jpeg">
-            <img src="IMG_5367.jpeg">
             <img src="2371fab0-bd36-4946-97bb-d52336347719.jpeg">
             <img src="IMG_5509.jpeg">
-            <img src="IMG_5500.jpeg">
         </div>
-        <div class="photo-column" style="animation-duration: 75s; animation-direction: reverse;">
+        <div class="photo-column" style="animation-direction: reverse;">
             <img src="IMG_5365.jpeg">
             <img src="IMG_5347.jpeg">
             <img src="IMG_5338.jpeg">
             <img src="IMG_5337.jpeg">
             <img src="IMG_5319.jpeg">
             <img src="IMG_5313.jpeg">
-            <img src="2371fab0-bd36-4946-97bb-d52336347719.jpeg">
             <img src="IMG_5365.jpeg">
             <img src="IMG_5347.jpeg">
-            <img src="IMG_5338.jpeg">
         </div>
     </div>
 
     <div id="historyOverlay">
-        <h2 style="color: var(--dark-pink); margin-top: 20px;">Our Message History</h2>
-        <div class="history-content" id="fullLogDisplay"></div>
+        <h2 style="color: var(--dark-pink); margin-top: 70px;">Our Message History</h2>
+        <div id="fullLogDisplay" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
     </div>
 
     <audio id="bgMusic">
@@ -277,159 +174,136 @@
     </audio>
 
     <div class="container" id="mainContainer">
-        <img src="IMG_5472.jpeg" alt="Muhaimin & Insyirah" class="profile-img">
+        <img src="IMG_5472.jpeg" alt="Profile" class="profile-img">
         <h1>For Insyirah ❤️</h1>
         <div class="days-counter" id="timer">Counting...</div>
         
         <div class="scroll-area" id="scrollContainer">
-            <div id="letter-text" style="text-align: left; font-size: 0.95rem; line-height: 1.6; color: #222;">
+            <div id="letter-text">
                 <p style="text-align: center;">I have something I want to tell you, sayang...</p>
             </div>
 
             <div id="daily-log-section">
                 <h3 style="color: var(--dark-pink); font-size: 1rem;">Daily Message</h3>
-                
-                <div class="preview-box">
-                    <span class="preview-label">Live Preview:</span>
-                    <div id="livePreview">...</div>
-                </div>
-
-                <textarea id="messageInput" class="log-input" placeholder="Say something sweet..." rows="3" oninput="updatePreview()"></textarea>
-                
+                <textarea id="messageInput" class="log-input" placeholder="Say something sweet today..." rows="3"></textarea>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <button class="btn btn-small" onclick="saveMessage()">Save Message ✍️</button>
+                    <button id="postBtn" class="btn btn-small" onclick="saveToCloud()">Post Message 🌍</button>
                     <button class="btn btn-small btn-history" onclick="toggleHistory()">View All History 📖</button>
-                </div>
-
-                <div id="latestSnippet" style="margin-top: 15px; font-style: italic; font-size: 0.8rem; color: #888; border-top: 1px solid #eee; padding-top: 10px;">
-                    Latest: Loading...
                 </div>
             </div>
         </div>
 
-        <div class="controls" style="display: flex; flex-direction: column; gap: 10px; padding-top: 15px;">
+        <div class="controls" style="margin-top:15px; display:flex; flex-direction:column; gap:10px;">
             <button class="btn" id="readBtn" onclick="startLetter()">Read My Letter</button>
             <button class="btn btn-flower" onclick="spawnFlowers()">Send Her Flowers 🌸</button>
-            <button class="btn btn-gallery" id="galleryBtn" onclick="toggleGallery()">View Our Gallery 🖼️</button>
+            <button class="btn btn-gallery" id="galleryBtn" onclick="toggleGallery()">View Gallery 🖼️</button>
         </div>
     </div>
 
     <script>
-        const startDate = new Date(2024, 2, 28); 
-        const music = document.getElementById('bgMusic');
-        const fullMessage = `Assalamualaikum sayang. This is me muhaimin, im sorry i have always hurt your feelings, everything you've said is true, its not that you keep wanting for more but instead, im not showing enough for you. <br><br>Sayang, please give me a chance to make everything right again, please also remember of our time together during highschool, we would eat together walk together sleep together. I hope we can do that again but because of our ldr status, i hope we can always call so we can spend time together much more. <br><br>I promise you that i will manage my time much better. I know that all the time i wasted on playing games instead of talking to you is something that i shouldn't have done, and i know you would have said its fine since i like gaming, but i think, in order to spend my time on something meaningful, i need to work on managing my time much better and start spending more with you. <br><br>Please know that i never feel burden by your request and im willing to do everything for you. I love you sayang💗`;
+        // --- SUPABASE CONFIG ---
+        const SUPABASE_URL = 'https://suegbgtnzzzdlkmnuhff.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1ZWdiZ3Ruenp6ZGxrbW51aGZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc1NjM3NzMsImV4cCI6MjA4MzEzOTc3M30.Mg-YIqVXrsl8Sp6T4XJ-X_Lxjz1yGaAEIwhMlC4WK0k';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let index = 0;
-        let isTyping = false;
-
-        function updateCounter() {
-            const now = new Date();
-            const diff = now - startDate;
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            document.getElementById('timer').innerHTML = days + " Days Together";
-        }
-
-        function startLetter() {
-            if(isTyping) return;
-            isTyping = true;
-            music.currentTime = 25;
-            music.play().catch(e => console.log("Music blocked"));
-            document.getElementById('readBtn').style.display = 'none';
-            document.getElementById('letter-text').innerHTML = "";
-            typeWriter();
-            setInterval(createHeart, 400); 
-        }
-
-        function typeWriter() {
-            const scrollArea = document.getElementById('scrollContainer');
-            const letterDiv = document.getElementById('letter-text');
-            if (index < fullMessage.length) {
-                let char = fullMessage.charAt(index);
-                if (char === "<") {
-                    letterDiv.innerHTML += "<br><br>";
-                    index += 8; 
-                } else {
-                    letterDiv.innerHTML += char;
-                    index++;
-                }
-                scrollArea.scrollTop = letterDiv.offsetTop + letterDiv.offsetHeight - 50;
-                setTimeout(typeWriter, 20); 
-            } else {
-                document.getElementById('galleryBtn').style.display = 'block';
-                isTyping = false;
-            }
-        }
-
-        // PREVIEW LOGIC
-        function updatePreview() {
-            const text = document.getElementById('messageInput').value;
-            document.getElementById('livePreview').innerText = text || "...";
-        }
-
-        function saveMessage() {
+        // --- CLOUD FUNCTIONS ---
+        async function saveToCloud() {
             const input = document.getElementById('messageInput');
-            const message = input.value.trim();
-            if (!message) return;
+            const btn = document.getElementById('postBtn');
+            const text = input.value.trim();
+            if (!text) return;
 
-            const now = new Date();
-            const timestamp = now.toLocaleDateString() + " at " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            btn.disabled = true; btn.innerText = "Posting...";
+            const { error } = await supabaseClient.from('messages').insert([{ text: text }]);
             
-            let messages = JSON.parse(localStorage.getItem('sayangMessages')) || [];
-            messages.unshift({date: timestamp, text: message});
-            localStorage.setItem('sayangMessages', JSON.stringify(messages));
-            
-            input.value = "";
-            updatePreview();
-            loadSavedMessages();
-            alert("Saved!");
+            if (error) { alert("Error saving: " + error.message); } 
+            else { input.value = ""; alert("Message published!"); }
+            btn.disabled = false; btn.innerText = "Post Message 🌍";
         }
 
-        function loadSavedMessages() {
-            const historyDisplay = document.getElementById('fullLogDisplay');
-            const snippet = document.getElementById('latestSnippet');
-            const messages = JSON.parse(localStorage.getItem('sayangMessages')) || [];
+        async function loadFromCloud() {
+            const display = document.getElementById('fullLogDisplay');
+            display.innerHTML = "Loading shared messages...";
+            const { data, error } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: false });
             
-            if(messages.length === 0) {
-                historyDisplay.innerHTML = "<p style='text-align:center'>No history yet.</p>";
-                snippet.innerHTML = "Latest: No messages yet.";
-            } else {
-                snippet.innerHTML = `Latest (${messages[0].date}): ${messages[0].text.substring(0, 30)}${messages[0].text.length > 30 ? '...' : ''}`;
-                historyDisplay.innerHTML = messages.map(msg => `
+            if (error) { display.innerHTML = "Error loading messages."; } 
+            else {
+                display.innerHTML = data.map(msg => `
                     <div class="log-entry">
-                        <span class="log-date">${msg.date}</span>
+                        <span class="log-date">${new Date(msg.created_at).toLocaleString()}</span>
                         ${msg.text}
                     </div>
-                `).join('');
+                `).join('') || "No messages yet.";
             }
         }
 
+        // --- UI TOGGLES ---
         function toggleHistory() {
-            const overlay = document.getElementById('historyOverlay');
+            const div = document.getElementById('historyOverlay');
             const btn = document.getElementById('closeHistory');
-            const isVisible = overlay.style.display === 'flex';
-            overlay.style.display = isVisible ? 'none' : 'flex';
-            btn.style.display = isVisible ? 'none' : 'block';
+            const isShowing = div.style.display === 'none' || div.style.display === '';
+            div.style.display = isShowing ? 'flex' : 'none';
+            btn.style.display = isShowing ? 'block' : 'none';
+            if(isShowing) loadFromCloud();
         }
 
         function toggleGallery() {
             const body = document.body;
             const container = document.getElementById('mainContainer');
             const btn = document.getElementById('closeGallery');
-            if (!body.classList.contains('gallery-mode')) {
-                body.classList.add('gallery-mode');
-                container.style.opacity = '0';
-                btn.style.display = 'block';
+            body.classList.toggle('gallery-mode');
+            const isGallery = body.classList.contains('gallery-mode');
+            container.style.opacity = isGallery ? '0' : '1';
+            btn.style.display = isGallery ? 'block' : 'none';
+        }
+
+        // --- TIMER & LETTER ---
+        const startDate = new Date(2024, 2, 28);
+        function updateCounter() {
+            const now = new Date();
+            const days = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
+            document.getElementById('timer').innerHTML = days + " Days Together";
+        }
+
+        const fullMessage = `Assalamualaikum sayang. This is me muhaimin, im sorry i have always hurt your feelings, everything you've said is true, its not that you keep wanting for more but instead, im not showing enough for you. <br><br>Sayang, please give me a chance to make everything right again, please also remember of our time together during highschool, we would eat together walk together sleep together. I hope we can do that again but because of our ldr status, i hope we can always call so we can spend time together much more. <br><br>I promise you that i will manage my time much better. I know that all the time i wasted on playing games instead of talking to you is something that i shouldn't have done, and i know you would have said its fine since i like gaming, but i think, in order to spend my time on something meaningful, i need to work on managing my time much better and start spending more with you. <br><br>Please know that i never feel burden by your request and im willing to do everything for you. I love you sayang💗`;
+        
+        let index = 0;
+        let isTyping = false;
+        function startLetter() {
+            if(isTyping) return;
+            isTyping = true;
+            const music = document.getElementById('bgMusic');
+            music.currentTime = 25;
+            music.play().catch(() => console.log("Music blocked"));
+            document.getElementById('readBtn').style.display = 'none';
+            document.getElementById('letter-text').innerHTML = "";
+            typeWriter();
+            setInterval(createHeart, 400);
+        }
+
+        function typeWriter() {
+            const letterDiv = document.getElementById('letter-text');
+            const scrollArea = document.getElementById('scrollContainer');
+            if (index < fullMessage.length) {
+                if (fullMessage.charAt(index) === "<") {
+                    letterDiv.innerHTML += "<br><br>";
+                    index += 8;
+                } else {
+                    letterDiv.innerHTML += fullMessage.charAt(index);
+                    index++;
+                }
+                scrollArea.scrollTop = letterDiv.scrollHeight;
+                setTimeout(typeWriter, 20);
             } else {
-                body.classList.remove('gallery-mode');
-                container.style.opacity = '1';
-                btn.style.display = 'none';
+                document.getElementById('galleryBtn').style.display = 'block';
+                isTyping = false;
             }
         }
 
+        // --- DECORATIONS ---
         function createHeart() {
             const heart = document.createElement('div');
-            heart.className = 'heart';
-            heart.innerHTML = '❤️';
+            heart.className = 'heart'; heart.innerHTML = '❤️';
             heart.style.left = Math.random() * 100 + 'vw';
             heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
             document.body.appendChild(heart);
@@ -437,16 +311,16 @@
         }
 
         function spawnFlowers() {
-            for(let i=0; i<60; i++) {
+            for(let i=0; i<50; i++) {
                 setTimeout(() => {
-                    const flower = document.createElement('div');
-                    flower.className = 'flower';
-                    flower.innerHTML = ['🌸', '🌹', '🌷', '✨', '💖'][Math.floor(Math.random() * 5)];
-                    flower.style.left = Math.random() * 100 + 'vw';
-                    flower.style.setProperty('--drift', (Math.random() * 60 - 30) + 'px');
-                    document.body.appendChild(flower);
-                    setTimeout(() => flower.remove(), 4000);
-                }, i * 25);
+                    const f = document.createElement('div');
+                    f.className = 'flower';
+                    f.innerHTML = ['🌸', '🌹', '🌷', '✨', '💖'][Math.floor(Math.random()*5)];
+                    f.style.left = Math.random() * 100 + 'vw';
+                    f.style.setProperty('--drift', (Math.random()*60-30)+'px');
+                    document.body.appendChild(f);
+                    setTimeout(() => f.remove(), 4000);
+                }, i * 40);
             }
         }
     </script>
