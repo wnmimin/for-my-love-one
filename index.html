@@ -32,6 +32,17 @@
             opacity: 0.8; transition: opacity 1s ease;
         }
 
+        /* Gallery Mode makes the background scrollable and opaque */
+        .gallery-mode .photo-bg {
+            opacity: 1 !important;
+            z-index: 20; 
+            overflow-y: auto; 
+            background: var(--soft-bg);
+            padding-top: 80px; 
+        }
+
+        .gallery-mode .photo-column { animation: none !important; }
+
         .photo-column {
             display: flex; flex-direction: column; gap: 25px;
             animation: scrollUp 60s linear infinite;
@@ -56,6 +67,7 @@
             z-index: 10; max-width: 450px; width: 85%;
             max-height: 85vh; display: flex; flex-direction: column;
             position: relative; backdrop-filter: blur(10px);
+            transition: opacity 0.5s ease;
         }
 
         .scroll-area { overflow-y: auto; flex-grow: 1; padding-right: 5px; }
@@ -94,25 +106,14 @@
         }
 
         .preview-tag {
-            font-size: 0.7rem;
-            background: var(--dark-pink);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 10px;
-            position: absolute;
-            top: -10px;
-            left: 15px;
+            font-size: 0.7rem; background: var(--dark-pink); color: white;
+            padding: 2px 8px; border-radius: 10px; position: absolute; top: -10px; left: 15px;
         }
 
         #previewText {
-            font-size: 0.85rem;
-            color: #444;
-            font-style: italic;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            margin-top: 5px;
+            font-size: 0.85rem; color: #444; font-style: italic;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            overflow: hidden; margin-top: 5px;
         }
 
         /* HISTORY OVERLAY */
@@ -147,6 +148,7 @@
         }
 
         .btn-small { padding: 8px 15px; font-size: 14px; width: 100%; margin-bottom: 10px; }
+        .btn-gallery { background: #6495ED; display: none; } /* Blue for gallery */
         
         .close-btn { position: fixed; top: 20px; z-index: 110; left: 50%; transform: translateX(-50%); }
 
@@ -165,13 +167,14 @@
 <body onload="updateCounter(); loadPreview();">
 
     <button id="closeHistory" class="btn close-btn" style="display:none;" onclick="toggleHistory()">Back to Letter ↩️</button>
+    <button id="closeGallery" class="btn close-btn" style="display:none;" onclick="toggleGallery()">Back to Letter ↩️</button>
 
     <div id="historyOverlay">
         <h2 style="color: var(--dark-pink); margin-top: 70px;">Our Message History</h2>
         <div id="fullLogDisplay" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
     </div>
 
-    <div class="photo-bg">
+    <div class="photo-bg" id="photoWall">
         <div class="photo-column">
             <img src="IMG_5509.jpeg"><img src="IMG_5500.jpeg"><img src="IMG_5480.jpeg"><img src="IMG_5471.jpeg">
             <img src="IMG_5509.jpeg"><img src="IMG_5500.jpeg"><img src="IMG_5480.jpeg"><img src="IMG_5471.jpeg">
@@ -210,8 +213,9 @@
             </div>
         </div>
 
-        <div class="controls" style="margin-top:15px;">
+        <div class="controls" style="margin-top:15px; display:flex; flex-direction:column; gap:10px;">
             <button class="btn" id="readBtn" onclick="startLetter()">Read My Letter</button>
+            <button class="btn btn-gallery" id="galleryBtn" onclick="toggleGallery()">View Our Gallery 🖼️</button>
         </div>
     </div>
 
@@ -221,57 +225,31 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1ZWdiZ3Ruenp6ZGxrbW51aGZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc1NjM3NzMsImV4cCI6MjA4MzEzOTc3M30.Mg-YIqVXrsl8Sp6T4XJ-X_Lxjz1yGaAEIwhMlC4WK0k';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // LETTER CONTENT
         const fullMessage = `Assalamualaikum sayang. This is me muhaimin, im sorry i have always hurt your feelings, everything you've said is true, its not that you keep wanting for more but instead, im not showing enough for you. <br><br>Sayang, please give me a chance to make everything right again, please also remember of our time together during highschool, we would eat together walk together sleep together. I hope we can do that again but because of our ldr status, i hope we can always call so we can spend time together much more. <br><br>I promise you that i will manage my time much better. I know that all the time i wasted on playing games instead of talking to you is something that i shouldn't have done, and i know you would have said its fine since i like gaming, but i think, in order to spend my time on something meaningful, i need to work on managing my time much better and start spending more with you. <br><br>Please know that i never feel burden by your request and im willing to do everything for you. I love you sayang💗`;
 
         let index = 0;
         let isTyping = false;
 
-        // LOAD LATEST MESSAGE FOR PREVIEW
         async function loadPreview() {
             const previewEl = document.getElementById('previewText');
-            const { data, error } = await supabaseClient
-                .from('messages')
-                .select('text')
-                .order('created_at', { ascending: false })
-                .limit(1);
-
-            if (!error && data && data.length > 0) {
-                previewEl.innerText = `"${data[0].text}"`;
-            } else {
-                previewEl.innerText = "No messages yet. Write your first note!";
-            }
+            const { data, error } = await supabaseClient.from('messages').select('text').order('created_at', { ascending: false }).limit(1);
+            if (!error && data && data.length > 0) { previewEl.innerText = `"${data[0].text}"`; }
         }
 
-        // SAVE TO SUPABASE
         async function saveToCloud() {
             const input = document.getElementById('messageInput');
             const btn = document.getElementById('postBtn');
-            const text = input.value.trim();
-            if (!text) return;
-
-            btn.disabled = true; btn.innerText = "Posting...";
-            const { error } = await supabaseClient.from('messages').insert([{ text: text }]);
-            
-            if (error) {
-                alert("Error: " + error.message);
-            } else {
-                input.value = "";
-                loadPreview();
-                alert("Message posted to the cloud! ❤️");
-            }
-            btn.disabled = false; btn.innerText = "Post to Website 🌍";
+            if (!input.value.trim()) return;
+            btn.disabled = true;
+            const { error } = await supabaseClient.from('messages').insert([{ text: input.value.trim() }]);
+            if (!error) { input.value = ""; loadPreview(); alert("Message posted! ❤️"); }
+            btn.disabled = false;
         }
 
-        // LOAD ALL MESSAGES
         async function loadFromCloud() {
             const display = document.getElementById('fullLogDisplay');
             display.innerHTML = "<p>Fetching our memories...</p>";
-            const { data, error } = await supabaseClient
-                .from('messages')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
+            const { data, error } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: false });
             if (!error) {
                 display.innerHTML = data.map(msg => `
                     <div class="log-entry">
@@ -282,7 +260,6 @@
             }
         }
 
-        // TOGGLE HISTORY VIEW
         function toggleHistory() {
             const div = document.getElementById('historyOverlay');
             const btn = document.getElementById('closeHistory');
@@ -292,7 +269,23 @@
             if(!isShowing) loadFromCloud();
         }
 
-        // TYPEWRITER LOGIC
+        function toggleGallery() {
+            const body = document.body;
+            const container = document.getElementById('mainContainer');
+            const closeBtn = document.getElementById('closeGallery');
+            if (!body.classList.contains('gallery-mode')) {
+                body.classList.add('gallery-mode');
+                container.style.opacity = '0';
+                container.style.pointerEvents = 'none';
+                closeBtn.style.display = 'block';
+            } else {
+                body.classList.remove('gallery-mode');
+                container.style.opacity = '1';
+                container.style.pointerEvents = 'auto';
+                closeBtn.style.display = 'none';
+            }
+        }
+
         function startLetter() {
             if(isTyping) return;
             isTyping = true;
@@ -308,18 +301,17 @@
             const scrollArea = document.getElementById('scrollContainer');
             if (index < fullMessage.length) {
                 if (fullMessage.charAt(index) === "<") {
-                    letterDiv.innerHTML += "<br><br>";
-                    index += 8;
+                    letterDiv.innerHTML += "<br><br>"; index += 8;
                 } else {
-                    letterDiv.innerHTML += fullMessage.charAt(index);
-                    index++;
+                    letterDiv.innerHTML += fullMessage.charAt(index++);
                 }
                 scrollArea.scrollTop = letterDiv.scrollHeight;
                 setTimeout(typeWriter, 30);
+            } else {
+                document.getElementById('galleryBtn').style.display = 'block';
             }
         }
 
-        // DAYS COUNTER
         function updateCounter() {
             const startDate = new Date(2024, 2, 28);
             const diff = Math.floor((new Date() - startDate) / (1000 * 60 * 60 * 24));
